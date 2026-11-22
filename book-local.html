@@ -390,13 +390,13 @@
       <div id="r2"><button id="multi" type="button"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="miter" aria-hidden="true"><rect x="4.5" y="8.5" width="11" height="11"></rect><path d="M8.5 8.5V4.5h11v11h-4"></path></svg></button><button id="btnRefresh" type="button"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(-0.6 0.3)"><path d="M20 12a8 8 0 1 1-2.6-5.9"></path><path d="M20 4v5h-5"></path></g></svg></button></div>
     </div>
   </div>
-  <div id="stage"><div id="grid" class="single"></div><div id="msg"></div><div id="stale"></div><div id="bld">2026-11-18 22:40</div></div>
+  <div id="stage"><div id="grid" class="single"></div><div id="msg"></div><div id="stale"></div><div id="bld">2026-11-22 05:55</div></div>
 </div>
 
 <!--SEO-BODY:BEGIN (rewritten by book-server; visually hidden text for screen readers and crawlers)-->
 <section id="seoText" class="srOnly" lang="en" aria-label="Live order book, market depth and trades">
 <h2>Live order book, market depth and trades</h2>
-<p>ExchEngine Order Book shows the live order book, market depth and recent trades of a crypto pair on Binance and ten other exchanges. Three linked views were built to reveal how price, volume and their distribution across the depth relate to each other, how far the price deviates, and how limit orders and walls press on it. Free, no sign-up, nothing to install.</p>
+<p>ExchEngine Order Book shows the live order book, market depth and recent trades of a crypto pair on Binance and 11 other exchanges. Three linked views were built to reveal how price, volume and their distribution across the depth relate to each other, how far the price deviates, and how limit orders and walls press on it. Free, no sign-up, nothing to install.</p>
 <h3>Orders</h3>
 <p>A price ladder grouped by an adjustable step inside a chosen Δ% window around the price, with cumulative volume bars. A scale of bid versus ask shares shows the buying or selling pressure at a glance, and the volume can be read in coins, in the quote currency or converted to dollars.</p>
 <h3>Depth</h3>
@@ -477,6 +477,8 @@ var EX = PRE ? PRE.ex : (/^[a-z]{3,12}$/.test(QS.ex || '') && EXCH_NAMES[QS.ex] 
 window.getEx = function () { return EX; }; window.getLang = function () { return LANG; };                    // для окна предупреждения о статусе биржи (скрипт в конце страницы)
 var BASE = PRE ? String(PRE.base).toUpperCase() : (/^[A-Za-z0-9]{1,20}$/.test(QS.base || '') ? QS.base.toUpperCase() : 'BTC');
 var QUOTE = PRE ? String(PRE.quote).toUpperCase() : (/^[A-Za-z0-9]{1,20}$/.test(QS.quote || '') ? QS.quote.toUpperCase() : 'USDT');
+var NOTE_ID = /^[A-Za-z0-9_-]{1,40}$/.test(QS.note || '') ? QS.note : '';          // заметка индекса, с которой открыта страница ('' — пришли не с индекса); живёт в адресе
+function noteQ() { return NOTE_ID ? '&note=' + encodeURIComponent(NOTE_ID) : ''; }
 var NAVT = (function () {                                                // как страница открыта: 'navigate' — переход, 'reload' — «Обновить», 'back_forward' — возврат/восстановление вкладки
   try {
     var e = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation');
@@ -714,7 +716,7 @@ function feedUrl(useAlt) {
 }
 function feedLater(ms) { if (Feed.timer) clearTimeout(Feed.timer); Feed.timer = setTimeout(feedPoll, ms); }
 var BACKOFF = [2000, 4000, 8000, 15000, 30000];                                 // паузы между неудачными циклами: нарастают, чтобы не бить по каналу, который и так душат
-function backoffMs() { return BACKOFF[Math.min(Math.max(Feed.cyc, 1) - 1, BACKOFF.length - 1)] + Math.floor(Math.random() * 1000); }
+function backoffMs() { var b = BACKOFF[Math.min(Math.max(Feed.cyc, 1) - 1, BACKOFF.length - 1)]; if (!Feed.book && b > 5000) b = 5000; return b + Math.floor(Math.random() * 1000); }   // данных ещё не было ни разу: повтор не реже раза в 5 с, а не раз в полминуты
 function feedFail(kind) {                                                       // kind: 'net' | reason сервера
   Feed.bad += 1; if (kind === 'net') Feed.cyc += 1;
   if (Feed.bad >= 2 && stepIdx !== 3 && !Feed.okStep && !Feed.book) { stepIdx = 3; Feed.p = null; lsSet('bookP', '3'); }   // выбранный шаг не взлетел: возвращаемся к 0.1%
@@ -738,7 +740,7 @@ function feedPoll() {
       feedFail('net'); feedLater(backoffMs());
     }
     Feed.reqs = (Feed.reqs || 0) + 1;                                          // со второго запроса (даже если данных ещё нет) шлём after: сервер отличает живого клиента от бота, который спрашивает один раз
-    x.open('GET', feedUrl(useAlt), true); x.timeout = tries === 1 ? 8000 : 10000;
+    x.open('GET', feedUrl(useAlt), true); x.timeout = (tries === 1 ? 8000 : 10000) + (Feed.book ? 0 : Math.min(Feed.cyc, 4) * 2000);   // пока данных нет, каждый неудачный цикл ждёт дольше (медленная связь)
     x.onload = function () {
       if (settled) return;
       var r = null; try { r = JSON.parse(x.responseText); } catch (e) { r = null; }
@@ -2028,26 +2030,44 @@ function toggleMenu(btn, kind) {
 var pickFrame = null;
 function openPicker() {
   closeMenus(); if (pickFrame) return; var f = document.createElement('iframe'); f.id = 'iframePick';
-  f.src = rootPath() + 'index-local.html?pick=1&ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE);
+  f.src = rootPath() + 'index-local.html?pick=1&ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + (NOTE_ID ? '&note=' + encodeURIComponent(NOTE_ID) : '');
   f.title = T('pick'); f.setAttribute('allowtransparency', 'true');
   f.onload = function () { try { f.contentWindow.focus(); } catch (e) { /* iframe недоступен */ } };
-  document.body.appendChild(f); pickFrame = f;
+  document.body.appendChild(f); pickFrame = f; showPickLoad();
 }
-function closePick() { var o = document.querySelectorAll('#iframePick'); for (var q = 0; q < o.length; q++) if (o[q].parentNode) o[q].parentNode.removeChild(o[q]);
+var pickLoad = null; var pickLoadTimer = 0;
+/** Окно выбора пары — главная страница в iframe; на медленной связи грузится долго: пока нет сигнала pickReady, поверх «Загрузка… N s» (тап — закрыть),
+ *  через 25 с без сигнала iframe запрашивается заново один раз. */
+function hidePickLoad() { if (pickLoadTimer) { clearInterval(pickLoadTimer); pickLoadTimer = 0; } if (pickLoad && pickLoad.parentNode) pickLoad.parentNode.removeChild(pickLoad); pickLoad = null; }
+function showPickLoad() {
+  var d = document.createElement('div'); var t0 = new Date().getTime(); var again = false;
+  d.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:101;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;color:#ddd;font-size:0.95rem;cursor:pointer';
+  d.textContent = T('loading'); d.onclick = closePick; document.body.appendChild(d); pickLoad = d;
+  pickLoadTimer = setInterval(function () {
+    var s = Math.floor((new Date().getTime() - t0) / 1000); d.textContent = T('loading') + ' ' + s + ' s';
+    if (s >= 25 && !again && pickFrame) { again = true; try { pickFrame.src = pickFrame.src; } catch (e) { /* iframe недоступен */ } }
+  }, 1000);
+}
+function closePick() { hidePickLoad(); var o = document.querySelectorAll('#iframePick'); for (var q = 0; q < o.length; q++) if (o[q].parentNode) o[q].parentNode.removeChild(o[q]);
   if (pickFrame && pickFrame.parentNode) pickFrame.parentNode.removeChild(pickFrame); pickFrame = null; }
 window.addEventListener('message', function (e) {
   if (!pickFrame || e.source !== pickFrame.contentWindow) return;
   if (location.origin !== 'null' && e.origin !== location.origin) return;
-  var d = e.data; if (!d || d.exchengine !== 'pick') return; closePick();
+  var d = e.data; if (!d || d.exchengine !== 'pick') return;
+  if (d.type === 'pickReady') { hidePickLoad(); return; }
+  closePick();
   if (d.type !== 'pairPicked') return;
   if (!EXCH_NAMES[d.ex] || !/^[A-Za-z0-9]{1,20}$/.test(d.base || '') || !/^[A-Za-z0-9]{1,20}$/.test(d.quote || '')) return;
   var base = String(d.base).toUpperCase(); var quote = String(d.quote).toUpperCase();
-  if (d.ex === EX && base === BASE && quote === QUOTE) return;
+  var noteChanged = false;
+  if (/^[A-Za-z0-9_-]{1,40}$/.test(d.note || '') && d.note !== NOTE_ID) { NOTE_ID = d.note; noteChanged = true; }   // сохранили (новую или изменённую) заметку: дальше работаем с ней
+  if (d.ex === EX && base === BASE && quote === QUOTE) { if (noteChanged) fixUrl(); return; }
   EX = d.ex; BASE = base; QUOTE = quote; applyPair();
-  try { if (window.history && history.replaceState && location.protocol !== 'file:') history.replaceState(null, '', '?ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + '&lang=' + encodeURIComponent(freshLang())); } catch (er) { /* адрес не меняем */ }
+  fixUrl();
 });
 function applyPair() { prClose(); prLoad(); seoTitle(); Feed.start(); updateBtns(); layout(); }
-function pairQuery() { return '?ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + '&lang=' + encodeURIComponent(freshLang()); }
+function pairQuery() { return '?ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + '&lang=' + encodeURIComponent(freshLang()) + noteQ(); }
+function fixUrl() { try { if (window.history && history.replaceState && location.protocol !== 'file:') history.replaceState(null, '', pairQuery()); } catch (er) { /* адрес не меняем */ } }
 
 /** Назад: окно открыто с главной (тап по плитке → чарт → стакан в той же вкладке) — закрываем его, остаётся исходная вкладка с главной;
     если закрыть нельзя (адрес открыт напрямую) — безусловно на главную. */

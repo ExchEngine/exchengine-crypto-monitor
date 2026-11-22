@@ -6,16 +6,16 @@
 <meta name="theme-color" content="#000000">
 <!--SEO-HEAD:BEGIN (the block between these markers is rewritten by gen-chart-pages.js; here it is the generic page)-->
 <title>Crypto Charts Online — Candlesticks, Indicators, Drawing Tools | ExchEngine</title>
-<meta name="description" content="Free online crypto chart: 19 chart types, 20 indicators, Fibonacci and Elliott tools, candles from 1 minute to 1 week on Binance and 10 other exchanges. No sign-up.">
+<meta name="description" content="Free &amp; unlimited online crypto charts and indicators, all types &amp; custom in a JS-like language, import/export, Fibonacci, Elliott, Ichimoku, Keltner, Connors RSI. No sign-up.">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ExchEngine">
 <meta property="og:title" content="Crypto Charts Online — Candlesticks, Indicators, Drawing Tools | ExchEngine">
-<meta property="og:description" content="Free online crypto chart: 19 chart types, 20 indicators, Fibonacci and Elliott tools, candles from 1 minute to 1 week on Binance and 10 other exchanges. No sign-up.">
+<meta property="og:description" content="Free &amp; unlimited online crypto charts and indicators, all types &amp; custom in a JS-like language, import/export, Fibonacci, Elliott, Ichimoku, Keltner, Connors RSI. No sign-up.">
 <meta property="og:image" content="https://www.exchengine.com/ExchEngine_blue.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Crypto Charts Online — Candlesticks, Indicators, Drawing Tools | ExchEngine">
-<meta name="twitter:description" content="Free online crypto chart: 19 chart types, 20 indicators, Fibonacci and Elliott tools, candles from 1 minute to 1 week on Binance and 10 other exchanges. No sign-up.">
+<meta name="twitter:description" content="Free &amp; unlimited online crypto charts and indicators, all types &amp; custom in a JS-like language, import/export, Fibonacci, Elliott, Ichimoku, Keltner, Connors RSI. No sign-up.">
 <meta name="twitter:image" content="https://www.exchengine.com/ExchEngine_blue.jpg">
 <meta property="og:image:alt" content="ExchEngine logo: a gear with the letter e — live crypto exchange prices and rates, running like clockwork">
 <meta name="twitter:image:alt" content="ExchEngine logo: a gear with the letter e — live crypto exchange prices and rates, running like clockwork">
@@ -195,6 +195,12 @@
   .menuList .mrow button.pinb svg { transform: rotate(25deg); transform-origin: center; }
   .menuList .mrow button.pinb.pinned svg { transform: none; }
   .pinIcon path { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .menuList button { overflow: hidden; text-overflow: ellipsis; }   /* длинные пользовательские имена — троеточием */
+  .menuList .msearch { display: flex; gap: var(--controlGap, 0.25rem); flex: 0 0 auto; }
+  .menuList .msearch input { flex: 1 1 auto; min-width: 8rem; height: 2rem; padding: 0 0.5rem; background: #111114; border: 1px solid #333; border-radius: 6px; color: #ddd; font-size: 0.9rem; box-sizing: border-box; }
+  .menuList .msearch input:focus { border-color: #4a9d6e; outline: none; }
+  .menuList .msearch button { flex: 0 0 2.4rem; width: 2.4rem; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .menuList .mscroll { display: flex; flex-direction: column; gap: 0.25rem; flex: 0 0 auto; max-height: calc(6 * 2rem + 5 * 0.25rem); overflow-y: auto; }
   .menuList .sep { font-size: 0.75rem; color: #8b929c; padding: 0.3rem 0.4rem 0; }
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 5px; margin-right: 9px; }
   #sbar { position: absolute; left: 8px; display: none; text-align: center; pointer-events: none; }
@@ -208,7 +214,7 @@
   #panel .row { display: flex; align-items: flex-start; margin: 0.4rem 0; }
   #panel .lb { flex: 0 0 5.4rem; width: 5.4rem; overflow-wrap: anywhere; min-height: 2rem; display: flex; align-items: center; font-size: 0.8rem; line-height: 1.05; color: #8b929c; padding-right: 0.3rem; }
   #panel .psec { display: flex; align-items: center; justify-content: space-between; margin: 0.7rem 0 0.2rem; padding-bottom: 0.25rem; border-bottom: 1px solid #2a2a30; font-size: 0.75rem; color: #8b929c; min-height: 1.5rem; }
-  #panel .pdef { height: 2rem; padding: 0 0.6rem; background: #24242a; border: 1px solid #333; border-radius: 6px; color: #ddd; font-size: 0.9rem; cursor: pointer; }
+  #panel .pdef { box-sizing: border-box; width: var(--btnW); overflow: hidden; height: 2rem; padding: 0; background: #24242a; border: 1px solid #333; border-radius: 6px; color: #ddd; font-size: 0.9rem; cursor: pointer; }
   #panel input[type=text] { flex: 1 1 auto; min-width: 0; width: 100%; height: 2rem; box-sizing: border-box; background: #0f0f12; border: 1px solid #333; color: #eee; border-radius: 6px; padding: 0 0.5rem; line-height: calc(2rem - 2px); font-size: 0.9rem; }
   #panel input[type=text]:focus { outline: none; border-color: #ccc; }
   #panel input.bad, #panel input[type=text].bad:focus { border-color: #ff4a33; }
@@ -222,6 +228,7 @@
   #panel .seg { flex: 1 1 auto; display: flex; flex-wrap: wrap; gap: var(--controlGap); }
   #panel .seg button, #panel .ddb, #panel .ddl button, #panel .stp { height: 2rem; background: #24242a; border: 1px solid #333; border-radius: 6px; color: #ddd; font-size: 0.9rem; cursor: pointer; }
   #panel .seg button { min-width: var(--iconW); padding: 0 0.55rem; white-space: nowrap; }
+  #panel .seg button[data-tx] { width: var(--btnW); padding: 0; overflow: hidden; }   /* текстовая кнопка — стандартная ширина --btnW (2 значка + зазор), как у Save/Cancel; длинный перевод — мельче шрифт */
   #panel .seg button[data-ln] { width: var(--iconW); padding: 0; display: inline-flex; align-items: center; justify-content: center; }
   #panel .seg button.on, #panel .ddl button.on { border-color: #4a9d6e; color: #7fd9a5; background: #1e2620; }
   #panel .nf { flex: 1 1 auto; min-width: 0; display: flex; gap: var(--controlGap); }
@@ -414,7 +421,7 @@
   </div>
   <div id="stage">
     <canvas id="cv" role="img" aria-label="Price chart"></canvas>
-    <div id="bld">2026-11-16 05:24</div>
+    <div id="bld">2026-11-22 05:35</div>
     <div id="msg"><div id="msgText"></div><button id="msgRetry" type="button" style="display:none"></button></div>
     <div id="note"></div>
     <button id="btnLatest" class="fab" type="button">&#9654;&#9654;</button>
@@ -427,11 +434,13 @@
 <!--SEO-BODY:BEGIN (rewritten by gen-chart-pages.js; visually hidden text for screen readers and crawlers, same technique as #pageH1 on the main page)-->
 <section id="seoText" class="srOnly" aria-label="About this chart">
 <h2>Free online crypto chart with analysis tools</h2>
-<p>A fast candlestick chart for cryptocurrency pairs from Binance and ten other exchanges. No sign-up, no download; it works in any modern browser, including Windows 7 and Android 7.</p>
+<p>A fast candlestick chart for cryptocurrency pairs from Binance and 11 other exchanges. No sign-up, no download; it works in any modern browser, including Windows 7 and Android 7.</p>
 <h3>Chart types</h3>
 <p>Candles, hollow candles, volume candles, bars, HLC bars, high-low, Heikin Ashi, line, line with markers, step line, area, HLC area, baseline, columns, Renko, line break, Kagi, range bars and point and figure. Growing and falling colours are adjustable.</p>
 <h3>Indicators and oscillators</h3>
-<p>SMA, EMA, WMA, Parabolic SAR, SuperTrend, Bollinger Bands, Donchian Channel, Envelope, VWAP, RSI, MACD, Stochastic, CCI, Williams %R, ROC, MFI, ADX, ATR, OBV and Awesome Oscillator, with adjustable periods and colours.</p>
+<p>104 built-in indicators and oscillators, each with adjustable periods and colours, plus your own indicators written in a JS-like formula language.</p>
+<p>On the price chart (40): Arnaud Legoux MA, Average Price, Bollinger Bands, Chande Kroll Stop, Donchian Channel, Double EMA, EMA, EMA Cross, Envelope, Guppy Multiple MA, Hamming MA, Hull MA, Ichimoku Cloud, Kaufman Adaptive MA, Keltner Channels, Least Squares MA, MA Cross, MA with EMA Cross, McGinley Dynamic, Median Price, Moving Average, Moving Average Channel, Moving Average Double, Moving Average Triple, Parabolic SAR, Pivot Points Standard, SMA, Smoothed MA, Standard Error Bands, SuperTrend, Triangular MA, Triple EMA, Typical Price, Volume Weighted MA, VWAP, Williams Alligator, Williams Fractal, WMA, Zero Lag EMA, Zig Zag.</p>
+<p>In separate panes (64): Accelerator Oscillator, Accumulation/Distribution, Accumulative Swing Index, ADX, Aroon, Aroon Oscillator, ATR, Average Range, Awesome Oscillator, Balance of Power, Bollinger Bands %B, Bollinger Bands Width, Bull Bear Power, CCI, Chaikin Money Flow, Chaikin Oscillator, Chaikin Volatility, Chande Momentum Oscillator, Choppiness Index, Connors RSI, Coppock Curve, Detrended Price Oscillator, Directional Movement Index, Disparity Index, Ease of Movement, Elder Force Index, Fisher Transform, Historical Volatility, Klinger Oscillator, Know Sure Thing, Linear Regression Slope, MACD, Mass Index, MFI, Momentum, Net Volume, OBV, Percentage Volume Oscillator, Price Oscillator, Price Volume Trend, Qstick, Rank Correlation Index, Relative Vigor Index, Relative Volatility Index, ROC, RSI, Schaff Trend Cycle, SMI Ergodic Oscillator, Standard Deviation, Standard Error, Stochastic, Stochastic RSI, Trend Strength Index, TRIX, True Strength Index, Ulcer Index, Ultimate Oscillator, Volatility Close-to-Close, Volatility O-H-L-C, Volatility Zero Trend Close-to-Close, Volume Oscillator, Vortex Indicator, Williams %R, Woodies CCI.</p>
 <h3>Drawing and analysis tools</h3>
 <p>Trend lines, horizontal and vertical lines, Fibonacci retracement levels, Elliott impulse waves 1-2-3-4-5 and corrective waves A-B-C. Drawings are stored in your browser, separately for each pair.</p>
 <h3>Timeframes and history</h3>
@@ -439,7 +448,7 @@
 <h3>Wide range of chart types and markup</h3>
 <p>Nineteen chart types, from candles and Heikin Ashi to Renko, Kagi, line break and point and figure, plus Fibonacci levels, Elliott waves, trend lines and other markup tools placed right on the chart.</p>
 <h3>Indicators and oscillators</h3>
-<p>Moving averages, bands and channels, SuperTrend, Parabolic SAR, VWAP and oscillators such as RSI, MACD, Stochastic, CCI, ADX and OBV, each with adjustable periods and colours.</p>
+<p>More than a hundred indicators: moving averages of every kind, bands and channels, Ichimoku, SuperTrend, Parabolic SAR, VWAP and oscillators such as RSI, MACD, Stochastic, CCI, ADX and OBV, each with adjustable periods and colours.</p>
 <h3>Flexible tools, import and export</h3>
 <p>Add as many instruments as you need, in any combination and order, and keep them separately for every pair. Export your markup and indicators to a text or file and import them back on any device.</p>
 <h3>Write your own indicators</h3>
@@ -923,7 +932,7 @@ var QS = parseQuery();
 // Обновление страницы (или возврат во вкладку) без пары в адресе: пара, с которой вкладка была открыта, хранится в sessionStorage (живёт, пока жива вкладка).
 (function () {
   if (NAVT === 'navigate' || QS.ex || QS.base || QS.quote) return;
-  try { var o = JSON.parse(sessionStorage.getItem('chartPair') || 'null'); if (o && o.ex && o.base && o.quote) { QS.ex = String(o.ex); QS.base = String(o.base); QS.quote = String(o.quote); } } catch (e) { /* нет сохранённой пары */ }
+  try { var o = JSON.parse(sessionStorage.getItem('chartPair') || 'null'); if (o && o.ex && o.base && o.quote) { QS.ex = String(o.ex); QS.base = String(o.base); QS.quote = String(o.quote); if (o.note) QS.note = String(o.note); } } catch (e) { /* нет сохранённой пары */ }
 })();
 // Пару передаёт index.html через localStorage ('chartOpen' = JSON { ex, base, quote, lang, t }), адрес остаётся чистым /chart.html: одна и та же
 // страница для любой пары (одна копия в кэше). Запись читается один раз и стирается, старше 2 минут — игнорируется. Параметры в адресе (ссылки
@@ -937,6 +946,7 @@ var QS = parseQuery();
   if (o.base) QS.base = String(o.base);
   if (o.quote) QS.quote = String(o.quote);
   if (o.lang) QS.lang = String(o.lang);
+  if (o.note) QS.note = String(o.note);
 })();
 // Готовая страница пары (её создаёт gen-chart-pages.js) задаёт пару в window.__PAIR и не показывает окно выбора; обычный вход по адресу берёт пару из параметров.
 var PRE = window.__PAIR && EXCH_NAMES[window.__PAIR.ex] && /^[A-Za-z0-9]{1,20}$/.test(window.__PAIR.base || '') && /^[A-Za-z0-9]{1,20}$/.test(window.__PAIR.quote || '') ? window.__PAIR : null;
@@ -945,7 +955,8 @@ var EX = PRE ? PRE.ex : (/^[a-z]{3,12}$/.test(QS.ex || '') && EXCH_NAMES[QS.ex] 
 window.getEx = function () { return EX; }; window.getLang = function () { return LANG; };                    // для окна предупреждения о статусе биржи (скрипт в конце страницы)
 var BASE = PRE ? String(PRE.base).toUpperCase() : (/^[A-Za-z0-9]{1,20}$/.test(QS.base || '') ? QS.base.toUpperCase() : 'BTC');
 var QUOTE = PRE ? String(PRE.quote).toUpperCase() : (/^[A-Za-z0-9]{1,20}$/.test(QS.quote || '') ? QS.quote.toUpperCase() : 'USDT');
-function savePair() { try { sessionStorage.setItem('chartPair', JSON.stringify({ ex: EX, base: BASE, quote: QUOTE })); } catch (e) { /* без хранилища — пара не переживёт обновление */ } }
+var NOTE_ID = /^[A-Za-z0-9_-]{1,40}$/.test(QS.note || '') ? QS.note : '';   // заметка индекса, с которой открыт чарт ('' — пришли не с индекса)
+function savePair() { try { sessionStorage.setItem('chartPair', JSON.stringify({ ex: EX, base: BASE, quote: QUOTE, note: NOTE_ID })); } catch (e) { /* без хранилища — пара не переживёт обновление */ } }
 if (HAS_PAIR) savePair();
 var TITLE_PRICE = false;                                                  // true — цена в заголовке вкладки (для поиска заголовок должен быть стабильным)
 // Язык и настройки: приоритет у localStorage (то, что выбрано на главной); адрес и готовая страница дают только то, чего в хранилище нет.
@@ -955,6 +966,19 @@ var TF = parseInt(lsGet('chartTf') || QS.tf || '60', 10);
 if (!inList(TFS, TF)) TF = 60;
 var DEBUG = QS.debug === '1';
 function T(key) { var d = I18N[LANG]; return (d && d[key]) || I18N.en[key] || key; }
+// поле поиска в меню индикаторов и подписи новых полей (нет перевода — показывается английский)
+(function () {
+  var S = { ru: 'Поиск', en: 'Search', zh: '搜索', es: 'Buscar', fr: 'Rechercher', de: 'Suche', el: 'Αναζήτηση', id: 'Cari', it: 'Cerca', ja: '検索', ko: '검색', mn: 'Хайх', pt: 'Pesquisar', tr: 'Ara', uk: 'Пошук', vi: 'Tìm kiếm', fi: 'Haku', lv: 'Meklēt', pl: 'Szukaj', sw: 'Tafuta', th: 'ค้นหา', ha: 'Nema' };
+  var R = { 'Offset': 'Смещение', 'Sigma': 'Сигма', 'EMA period': 'Период EMA', 'Period 2': 'Период 2', 'Period 3': 'Период 3', 'Line 2': 'Линия 2', 'Long-term': 'Долгосрочные', 'Short stop': 'Стоп шорт',
+    'Down fractal': 'Нижний фрактал', 'Bars each side': 'Свечей с каждой стороны', 'Deviation, %': 'Отклонение, %', 'Limit move': 'Предельный ход', 'Aroon Down': 'Aroon вниз', 'Support': 'Поддержка',
+    'Conversion': 'Конверсия', 'Base': 'База', 'Span B': 'Span B', 'Lagging': 'Запаздывание', 'Stop period': 'Период стопа', 'ATR period': 'Период ATR', 'Jaw': 'Челюсть', 'Teeth': 'Зубы', 'Lips': 'Губы',
+    'Trigger': 'Триггер', 'ROC length': 'Длина ROC', 'RSI length': 'Длина RSI', 'Streak RSI length': 'Длина RSI серии', 'Rank length': 'Длина ранга', 'WMA length': 'Длина WMA', 'Long ROC': 'Длинный ROC',
+    'Short ROC': 'Короткий ROC', 'Divisor': 'Делитель', 'StdDev length': 'Длина StdDev', 'Long length': 'Длинный период', 'Short length': 'Короткий период', 'Stochastic length': 'Длина стохастика',
+    'Fast length': 'Быстрый период', 'Middle length': 'Средний период', 'Slow length': 'Медленный период', 'Cycle length': 'Длина цикла', 'Sum length': 'Длина суммы', 'EMA length': 'Длина EMA',
+    'Turbo length': 'Длина турбо', 'Turbo CCI': 'Турбо CCI' };
+  var k; for (k in S) if (I18N[k]) I18N[k].search = S[k];
+  for (k in R) I18N.ru[k] = R[k];
+})();
 
 // ---- сеть: тот же маршрут, метка клиента и правила, что в index.html ----
 var SERVER = 'https://www.exchengine.com';
@@ -2565,7 +2589,424 @@ INDDEF.atr = { cat: 'osc', title: 'ATR', color: '#ff8a3d', width: 1, fields: [fP
 INDDEF.obv = { cat: 'osc', title: 'OBV', color: '#4a9eff', color2: '#ff8a3d', c2l: 'sigline', width: 1, fields: [fSel('src', 'src', SRC_OPTS, 'c'), fSel('ma', 'mtype', MA_OPTS, 'sma'), fNum('signal', 'sigoff', 0, 500, 0, 1, true)] };
 INDDEF.ao = { cat: 'osc', title: 'Awesome Osc.', color: '#26a65b', width: 1, zero: true, fields: [fNum('fast', 'fast', 1, 200, 5, 1, true), fNum('slow', 'slow', 2, 400, 34, 1, true)] };
 INDDEF.fx = { cat: 'price', title: 'Custom', color: '#f0b90b', color2: '#4a9eff', c2l: 'color_2', width: 2, fields: [] };
-var IND_ORDER = { ind: ['sma', 'ema', 'wma', 'ma', 'sar', 'st', 'bb', 'don', 'env', 'vwap'], osc: ['rsi', 'macd', 'stoch', 'cci', 'wpr', 'roc', 'mfi', 'adx', 'atr', 'obv', 'ao'] };
+// PK-BEGIN
+// ---- расширенный набор индикаторов: описание и расчёт в таблице PK (меню строится по алфавиту из INDDEF) ----
+var PK = {};
+function fL(k, label, def, min, max) { return fNum(k, label, min || 1, max || 500, def, 1, true); }
+function fSrc() { return fSel('src', 'src', SRC_OPTS, 'c'); }
+function fMT(k, def) { return fSel(k || 'ma', 'mtype', MA_OPTS, def || 'sma'); }
+function pkDef(type, cat, title, color, fields, extra, calc) {
+  var d = { cat: cat, title: title, color: color, width: cat === 'trend' ? 2 : 1, fields: fields }; var k;
+  if (extra) for (k in extra) d[k] = extra[k];
+  if (d.band && !d.color2) d.color2 = color;
+  INDDEF[type] = d; PK[type] = calc;
+}
+function ln(a, c, x) { var s = { k: 'line', a: a, c: c || 'c1' }; if (x) for (var k in x) s[k] = x[k]; return s; }
+function hs(a, dir) { return { k: 'hist', a: a, dir: !!dir }; }
+function dt(a, c) { return { k: 'dots', a: a, c: c }; }
+function qMap(m, f) { var r = nanArr(m); for (var i = 0; i < m; i++) r[i] = f(i); return r; }
+function qSma(a, p) { return lead(a, function (x) { return calcSma(x, p); }); }
+function qEma(a, p) { return lead(a, function (x) { return calcEma(x, p); }); }
+function qRma(a, p) { return lead(a, function (x) { return calcRma(x, p); }); }
+function qWma(a, p) { return lead(a, function (x) { return calcWma(x, p); }); }
+function qStd(a, p) { return lead(a, function (x) { return calcStd(x, p); }); }
+function qHH(a, p) { return lead(a, function (x) { return slideExt(x, p, true); }); }
+function qLL(a, p) { return lead(a, function (x) { return slideExt(x, p, false); }); }
+function qSum(a, p) {
+  return lead(a, function (x) { var n = x.length; var r = nanArr(n); var s = 0; for (var i = 0; i < n; i++) { s += x[i]; if (i >= p) s -= x[i - p]; if (i >= p - 1) r[i] = s; } return r; });
+}
+function qSub(a, b) { return qMap(a.length, function (i) { return a[i] - b[i]; }); }
+function qLag(a, k) { var m = a.length; var r = nanArr(m); for (var i = k; i < m; i++) r[i] = a[i - k]; return r; }
+function qLog(a) { return qMap(a.length, function (i) { return a[i] > 0 ? Math.log(a[i]) : NaN; }); }
+function qChg(a) { var m = a.length; var r = nanArr(m); for (var i = 1; i < m; i++) r[i] = a[i] - a[i - 1]; return r; }
+function qTr(P) { var r = new Float64Array(P.m); for (var i = 0; i < P.m; i++) r[i] = trueRange(P.h, P.l, P.c, i); return r; }
+function qAd(P) { var r = new Float64Array(P.m); var s = 0; for (var i = 0; i < P.m; i++) { var d = P.h[i] - P.l[i]; if (d > 0) s += ((P.c[i] - P.l[i]) - (P.h[i] - P.c[i])) / d * P.v[i]; r[i] = s; } return r; }
+function qPpy() { return 365 * 86400000 / D.step; }                 // свечей в году: для приведения волатильности к годовой
+/** Линейная регрессия по окну p: fit — значение в конце окна, sl — наклон, se — стандартная ошибка, r — корреляция с номером свечи. */
+function qReg(a, p) {
+  var m = a.length; var fit = nanArr(m); var sl = nanArr(m); var se = nanArr(m); var rr = nanArr(m);
+  if (p < 2) { for (var z = 0; z < m; z++) { fit[z] = a[z]; sl[z] = 0; se[z] = 0; rr[z] = 0; } return { fit: fit, sl: sl, se: se, r: rr }; }
+  var sx = p * (p - 1) / 2; var sxx = (p - 1) * p * (2 * p - 1) / 6; var den = p * sxx - sx * sx; var i; var j;
+  for (i = p - 1; i < m; i++) {
+    var y0 = a[i - p + 1]; var s1 = 0; var s2 = 0; var s3 = 0;
+    for (j = 0; j < p; j++) { var y = a[i - p + 1 + j] - y0; s1 += y; s2 += j * y; s3 += y * y; }
+    var b = (p * s2 - sx * s1) / den; var a0 = (s1 - b * sx) / p; var sse = s3 - a0 * s1 - b * s2; if (sse < 0) sse = 0;
+    fit[i] = y0 + a0 + b * (p - 1); sl[i] = b; se[i] = Math.sqrt(sse / (p - 2));
+    var vy = p * s3 - s1 * s1; rr[i] = vy > 0 ? (p * s2 - sx * s1) / Math.sqrt(den * vy) : 0;
+  }
+  return { fit: fit, sl: sl, se: se, r: rr };
+}
+function qTsi(a, sh, lo) { var mo = qChg(a); var ab = qMap(a.length, function (i) { return Math.abs(mo[i]); }); var n = qEma(qEma(mo, lo), sh); var d = qEma(qEma(ab, lo), sh); return qMap(a.length, function (i) { return d[i] > 0 ? n[i] / d[i] : (n[i] === n[i] ? 0 : NaN); }); }
+function qStoch(a, p) { var hi = qHH(a, p); var lo = qLL(a, p); return qMap(a.length, function (i) { return hi[i] - lo[i] > 0 ? (a[i] - lo[i]) / (hi[i] - lo[i]) * 100 : (hi[i] === hi[i] ? 50 : NaN); }); }
+function qMid(a, b) { return qMap(a.length, function (i) { return (a[i] + b[i]) / 2; }); }
+
+function maPk(type) { return function (o, P) { return { s: [ln(calcMA(type, P.src(o.src), P.v, o.period))] }; }; }
+function maFields(def) { return [fL('period', 'period', def, 1, 1000), fSrc(), fOff()]; }
+pkDef('alma', 'trend', 'Arnaud Legoux MA', '#e0a43a', [fL('period', 'period', 9, 1, 1000), fNum('offr', 'Offset', 0, 1, 0.85, 0.01), fNum('sigma', 'Sigma', 0.1, 50, 6, 0.1), fSrc(), fOff()], 0,
+  function (o, P) { return { s: [ln(calcAlma(P.src(o.src), o.period, o.offr, o.sigma))] }; });
+pkDef('dema', 'trend', 'Double EMA', '#4a9eff', maFields(21), 0, maPk('dema'));
+pkDef('tema', 'trend', 'Triple EMA', '#19c3d8', maFields(21), 0, maPk('tema'));
+pkDef('hma', 'trend', 'Hull MA', '#26a65b', maFields(9), 0, maPk('hma'));
+pkDef('lsma', 'trend', 'Least Squares MA', '#ff6fb5', maFields(25), 0, maPk('lsma'));
+pkDef('rma', 'trend', 'Smoothed MA', '#a3e635', maFields(14), 0, maPk('rma'));
+pkDef('vwma', 'trend', 'Volume Weighted MA', '#c08457', maFields(20), 0, maPk('vwma'));
+pkDef('kama', 'trend', 'Kaufman Adaptive MA', '#ff8a3d', [fL('period', 'period', 10, 2, 500), fL('fast', 'fast', 2, 1, 100), fL('slow', 'slow', 30, 2, 400), fSrc(), fOff()], 0,
+  function (o, P) { return { s: [ln(calcKama(P.src(o.src), o.period, o.fast, o.slow))] }; });
+pkDef('tma', 'trend', 'Triangular MA', '#b36bff', maFields(20), 0,
+  function (o, P) { var a = P.src(o.src); return { s: [ln(qSma(qSma(a, Math.ceil((o.period + 1) / 2)), Math.floor(o.period / 2) + 1))] }; });
+pkDef('zlema', 'trend', 'Zero Lag EMA', '#f0b90b', maFields(21), 0,
+  function (o, P) { var a = P.src(o.src); var lg = Math.floor((o.period - 1) / 2); var b = qMap(P.m, function (i) { return i >= lg ? 2 * a[i] - a[i - lg] : NaN; }); return { s: [ln(qEma(b, o.period))] }; });
+pkDef('hamming', 'trend', 'Hamming MA', '#9aa3ad', maFields(20), 0,
+  function (o, P) {
+    var a = P.src(o.src); var p = o.period; var w = []; var ws = 0; var j; var r = nanArr(P.m);
+    for (j = 0; j < p; j++) { w.push(Math.sin((j + 1) * Math.PI / (p + 1))); ws += w[j]; }
+    for (var i = p - 1; i < P.m; i++) { var s = 0; for (j = 0; j < p; j++) s += a[i - j] * w[j]; r[i] = s / ws; }
+    return { s: [ln(r)] };
+  });
+pkDef('mcginley', 'trend', 'McGinley Dynamic', '#ff4a33', [fL('period', 'period', 14, 1, 500), fSrc(), fOff()], 0,
+  function (o, P) {
+    var a = P.src(o.src); var p = o.period; var e = calcEma(a, p); var r = nanArr(P.m); var prev = NaN;
+    for (var i = 0; i < P.m; i++) {
+      if (prev !== prev) { if (e[i] === e[i]) { prev = e[i]; r[i] = prev; } continue; }
+      var q = a[i] / prev; prev = prev + (a[i] - prev) / (p * q * q * q * q); r[i] = prev;
+    }
+    return { s: [ln(r)] };
+  });
+pkDef('macross', 'trend', 'MA Cross', '#4a9eff', [fL('fast', 'fast', 9, 1, 500), fL('slow', 'slow', 21, 2, 1000), fMT(), fSrc(), fOff()], { color2: '#ff8a3d', c2l: 'slow' },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(calcMA(o.ma, a, P.v, o.fast)), ln(calcMA(o.ma, a, P.v, o.slow), 'c2')] }; });
+pkDef('emacross', 'trend', 'EMA Cross', '#4a9eff', [fL('fast', 'fast', 9, 1, 500), fL('slow', 'slow', 21, 2, 1000), fSrc(), fOff()], { color2: '#ff8a3d', c2l: 'slow' },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(calcEma(a, o.fast)), ln(calcEma(a, o.slow), 'c2')] }; });
+pkDef('maema', 'trend', 'MA with EMA Cross', '#4a9eff', [fL('period', 'period', 20, 1, 1000), fMT(), fL('emap', 'EMA period', 9, 1, 500), fSrc(), fOff()], { color2: '#ff8a3d', c2l: 'EMA' },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(calcMA(o.ma, a, P.v, o.period)), ln(calcEma(a, o.emap), 'c2')] }; });
+pkDef('ma2', 'trend', 'Moving Average Double', '#4a9eff', [fMT('ma'), fL('period', 'period', 9, 1, 1000), fMT('ma2'), fL('p2', 'Period 2', 21, 1, 1000), fSrc(), fOff()], { color2: '#ff8a3d', c2l: 'Line 2' },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(calcMA(o.ma, a, P.v, o.period)), ln(calcMA(o.ma2, a, P.v, o.p2), 'c2')] }; });
+pkDef('ma3', 'trend', 'Moving Average Triple', '#4a9eff', [fMT('ma'), fL('period', 'period', 9, 1, 1000), fMT('ma2'), fL('p2', 'Period 2', 21, 1, 1000), fMT('ma3'), fL('p3', 'Period 3', 50, 1, 1000), fSrc(), fOff()], { color2: '#ff8a3d', c2l: 'Line 2' },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(calcMA(o.ma, a, P.v, o.period)), ln(calcMA(o.ma2, a, P.v, o.p2), 'c2'), ln(calcMA(o.ma3, a, P.v, o.p3), '#26a65b')] }; });
+pkDef('guppy', 'trend', 'Guppy Multiple MA', '#4a9eff', [fSrc(), fOff()], { color2: '#ff4a33', c2l: 'Long-term' },
+  function (o, P) {
+    var a = P.src(o.src); var s = []; var sh = [3, 5, 8, 10, 12, 15]; var lo = [30, 35, 40, 45, 50, 60]; var i;
+    for (i = 0; i < 6; i++) s.push(ln(calcEma(a, sh[i]), 'c1', { thin: true }));
+    for (i = 0; i < 6; i++) s.push(ln(calcEma(a, lo[i]), 'c2', { thin: true }));
+    return { s: s };
+  });
+pkDef('machannel', 'trend', 'Moving Average Channel', '#19c3d8', [fL('period', 'period', 20, 1, 1000), fMT(), fOff()].concat(FILL_FIELDS), { band: true, width: 1 },
+  function (o, P) { return { s: [ln(calcMA(o.ma, P.h, P.v, o.period)), ln(calcMA(o.ma, P.l, P.v, o.period))], band: [0, 1] }; });
+pkDef('keltner', 'trend', 'Keltner Channels', '#4a9eff', [fL('period', 'period', 20, 1, 1000), fL('atrp', 'ATR period', 10, 1, 500), fNum('mult', 'mult', 0.1, 20, 2, 0.1), fMT('ma', 'ema'), fSrc(), fOff()].concat(FILL_FIELDS), { band: true, width: 1 },
+  function (o, P) {
+    var mid = calcMA(o.ma, P.src(o.src), P.v, o.period); var at = calcAtr(P.h, P.l, P.c, o.atrp);
+    var u = qMap(P.m, function (i) { return mid[i] + o.mult * at[i]; }); var l = qMap(P.m, function (i) { return mid[i] - o.mult * at[i]; });
+    return { s: [ln(u), ln(l), ln(mid, 'c1', { dash: true })], band: [0, 1], main: 2 };
+  });
+pkDef('ichimoku', 'trend', 'Ichimoku Cloud', '#26a65b', [fL('conv', 'Conversion', 9, 1, 200), fL('base', 'Base', 26, 1, 400), fL('spanb', 'Span B', 52, 1, 600), fL('disp', 'Lagging', 26, 1, 200)].concat(FILL_FIELDS), { band: true, width: 1 },
+  function (o, P) {
+    var t = qMid(qHH(P.h, o.conv), qLL(P.l, o.conv)); var k = qMid(qHH(P.h, o.base), qLL(P.l, o.base)); var d = o.disp - 1;
+    var sa = shiftArr(qMid(t, k), d); var sb = shiftArr(qMid(qHH(P.h, o.spanb), qLL(P.l, o.spanb)), d);
+    return { s: [ln(sa), ln(sb, '#ff4a33'), ln(t, '#4a9eff'), ln(k, '#ff8a3d'), ln(shiftArr(P.c, -d), '#b36bff', { thin: true })], band: [0, 1], main: 2 };
+  });
+pkDef('chandekroll', 'trend', 'Chande Kroll Stop', '#26a65b', [fL('period', 'period', 10, 1, 500), fNum('mult', 'mult', 0.1, 20, 1, 0.1), fL('q', 'Stop period', 9, 1, 500)], { color2: '#ff4a33', c2l: 'Short stop', width: 1 },
+  function (o, P) {
+    var at = calcAtr(P.h, P.l, P.c, o.period); var hh = qHH(P.h, o.period); var ll = qLL(P.l, o.period);
+    var fh = qMap(P.m, function (i) { return hh[i] - o.mult * at[i]; }); var fl = qMap(P.m, function (i) { return ll[i] + o.mult * at[i]; });
+    return { s: [ln(qHH(fh, o.q)), ln(qLL(fl, o.q), 'c2')] };
+  });
+pkDef('zigzag', 'trend', 'Zig Zag', '#f0b90b', [fNum('dev', 'Deviation, %', 0.1, 50, 5, 0.1)], { width: 2 },
+  function (o, P) {
+    var m = P.m; var h = P.h; var l = P.l; var dv = o.dev / 100; var r = nanArr(m); var pv = []; var i;
+    if (m < 2) return { s: [ln(r)] };
+    var dir = 0; var hiI = 0; var hiV = h[0]; var loI = 0; var loV = l[0]; var ei = 0; var ev = 0;
+    for (i = 1; i < m; i++) {
+      if (dir === 0) {
+        if (h[i] > hiV) { hiV = h[i]; hiI = i; } if (l[i] < loV) { loV = l[i]; loI = i; }
+        if (hiV >= loV * (1 + dv) && hiI > loI) { pv.push([loI, loV]); dir = 1; ei = hiI; ev = hiV; }
+        else if (loV <= hiV * (1 - dv) && loI > hiI) { pv.push([hiI, hiV]); dir = -1; ei = loI; ev = loV; }
+      } else if (dir === 1) {
+        if (h[i] > ev) { ev = h[i]; ei = i; } else if (l[i] <= ev * (1 - dv)) { pv.push([ei, ev]); dir = -1; ei = i; ev = l[i]; }
+      } else {
+        if (l[i] < ev) { ev = l[i]; ei = i; } else if (h[i] >= ev * (1 + dv)) { pv.push([ei, ev]); dir = 1; ei = i; ev = h[i]; }
+      }
+    }
+    if (dir !== 0) pv.push([ei, ev]);
+    for (i = 0; i + 1 < pv.length; i++) for (var j = pv[i][0]; j <= pv[i + 1][0]; j++) r[j] = pv[i][1] + (pv[i + 1][1] - pv[i][1]) * (j - pv[i][0]) / (pv[i + 1][0] - pv[i][0]);
+    return { s: [ln(r)] };
+  });
+pkDef('fractal', 'trend', 'Williams Fractal', '#26a65b', [fL('n', 'Bars each side', 2, 1, 20)], { color2: '#ff4a33', c2l: 'Down fractal' },
+  function (o, P) {
+    var m = P.m; var n = o.n; var u = nanArr(m); var d = nanArr(m); var i; var j;
+    for (i = n; i < m - n; i++) {
+      var a = true; var b = true;
+      for (j = i - n; j <= i + n; j++) { if (j === i) continue; if (P.h[j] >= P.h[i]) a = false; if (P.l[j] <= P.l[i]) b = false; }
+      if (a) u[i] = P.h[i]; if (b) d[i] = P.l[i];
+    }
+    return { s: [dt(u, 'c1'), dt(d, 'c2')] };
+  });
+pkDef('alligator', 'trend', 'Williams Alligator', '#26a65b', [fL('jaw', 'Jaw', 13, 1, 200), fL('teeth', 'Teeth', 8, 1, 200), fL('lips', 'Lips', 5, 1, 200)], { width: 1 },
+  function (o, P) {
+    var a = P.src('hl2');
+    return { s: [ln(shiftArr(calcRma(a, o.jaw), 8), '#4a9eff'), ln(shiftArr(calcRma(a, o.teeth), 5), '#ff4a33'), ln(shiftArr(calcRma(a, o.lips), 3), '#26a65b')], main: 2 };
+  });
+pkDef('avgprice', 'trend', 'Average Price', '#9aa3ad', [fOff()], 0, function (o, P) { return { s: [ln(P.src('ohlc4'))] }; });
+pkDef('medprice', 'trend', 'Median Price', '#c08457', [fOff()], 0, function (o, P) { return { s: [ln(P.src('hl2'))] }; });
+pkDef('typprice', 'trend', 'Typical Price', '#ff6fb5', [fOff()], 0, function (o, P) { return { s: [ln(P.src('hlc3'))] }; });
+pkDef('stderrbands', 'trend', 'Standard Error Bands', '#b36bff', [fL('period', 'period', 21, 3, 500), fNum('mult', 'mult', 0.1, 20, 2, 0.1), fSrc(), fOff()].concat(FILL_FIELDS), { band: true, width: 1 },
+  function (o, P) {
+    var g = qReg(P.src(o.src), o.period);
+    return { s: [ln(qMap(P.m, function (i) { return g.fit[i] + o.mult * g.se[i]; })), ln(qMap(P.m, function (i) { return g.fit[i] - o.mult * g.se[i]; })), ln(g.fit, 'c1', { dash: true })], band: [0, 1], main: 2 };
+  });
+pkDef('pivot', 'trend', 'Pivot Points Standard', '#ff8a3d', [fSel('anchor', 'anchor', [['day', 'anchor_day'], ['week', 'anchor_week'], ['month', 'anchor_month']], 'day')], { color2: '#26a65b', c2l: 'Support', width: 1 },
+  function (o, P) {
+    var m = P.m; var L = []; var q; for (q = 0; q < 7; q++) L.push(nanArr(m));
+    var gp = null; var H = 0; var Lo = 0; var C = 0; var have = false; var pH = 0; var pL = 0; var pC = 0; var ok = false; var pp = 0; var rg = 0; var k;
+    for (k = 0; k < m; k++) {
+      var t = P.tm(k); var g;
+      if (o.anchor === 'day') g = Math.floor(t / 86400000); else if (o.anchor === 'week') g = Math.floor((t - 345600000) / 604800000);
+      else { var d0 = new Date(t); g = d0.getUTCFullYear() * 12 + d0.getUTCMonth(); }
+      if (g !== gp) {
+        if (have) { pH = H; pL = Lo; pC = C; ok = true; pp = (pH + pL + pC) / 3; rg = pH - pL; }
+        gp = g; H = P.h[k]; Lo = P.l[k]; C = P.c[k]; have = true;
+        if (ok) continue;                                        // первая свеча периода — разрыв линии, чтобы уровни не соединялись по вертикали
+      } else { if (P.h[k] > H) H = P.h[k]; if (P.l[k] < Lo) Lo = P.l[k]; }
+      C = P.c[k];
+      if (ok) { L[0][k] = pp; L[1][k] = 2 * pp - pL; L[2][k] = pp + rg; L[3][k] = pH + 2 * (pp - pL); L[4][k] = 2 * pp - pH; L[5][k] = pp - rg; L[6][k] = pL - 2 * (pH - pp); }
+    }
+    return { s: [ln(L[0], '#9aa3ad'), ln(L[1], 'c1', { thin: true }), ln(L[2], 'c1', { thin: true }), ln(L[3], 'c1', { thin: true }), ln(L[4], 'c2', { thin: true }), ln(L[5], 'c2', { thin: true }), ln(L[6], 'c2', { thin: true })] };
+  });
+
+// ---- осцилляторы ----
+pkDef('ac', 'osc', 'Accelerator Osc.', '#26a65b', [fL('fast', 'fast', 5, 1, 200), fL('slow', 'slow', 34, 2, 400), fL('smooth', 'smooth', 5, 1, 200)], { zero: true },
+  function (o, P) { var a = P.src('hl2'); var ao = qSub(qSma(a, o.fast), qSma(a, o.slow)); return { s: [hs(qSub(ao, qSma(ao, o.smooth)), true)] }; });
+pkDef('ad', 'osc', 'Accum./Distribution', '#4a9eff', [], 0, function (o, P) { return { s: [ln(qAd(P))] }; });
+pkDef('asi', 'osc', 'Accum. Swing Index', '#19c3d8', [fNum('limit', 'Limit move', 0.0000001, 1000000000, 0.5, 0.1)], 0,
+  function (o, P) {
+    var m = P.m; var r = new Float64Array(m); var s = 0;
+    for (var i = 1; i < m; i++) {
+      var C = P.c[i]; var O = P.o[i]; var H = P.h[i]; var L = P.l[i]; var C1 = P.c[i - 1]; var O1 = P.o[i - 1];
+      var a = Math.abs(H - C1); var b = Math.abs(L - C1); var d = H - L; var k = Math.max(a, b); var R;
+      if (a >= b && a >= d) R = a - 0.5 * b + 0.25 * Math.abs(C1 - O1); else if (b >= a && b >= d) R = b - 0.5 * a + 0.25 * Math.abs(C1 - O1); else R = d + 0.25 * Math.abs(C1 - O1);
+      if (R > 0) s += 50 * ((C - C1) + 0.5 * (C - O) + 0.25 * (C1 - O1)) / R * k / o.limit;
+      r[i] = s;
+    }
+    return { s: [ln(r)] };
+  });
+function aroonCalc(P, p) {
+  var m = P.m; var u = nanArr(m); var d = nanArr(m); var i; var j;
+  for (i = p; i < m; i++) {
+    var hi = i - p; var lo = i - p;
+    for (j = i - p; j <= i; j++) { if (P.h[j] >= P.h[hi]) hi = j; if (P.l[j] <= P.l[lo]) lo = j; }
+    u[i] = 100 * (p - (i - hi)) / p; d[i] = 100 * (p - (i - lo)) / p;
+  }
+  return { u: u, d: d };
+}
+pkDef('aroon', 'osc', 'Aroon', '#26a65b', [fL('period', 'period', 14, 2, 500)], { color2: '#ff4a33', c2l: 'Aroon Down', bounds: [0, 100], levels: [30, 70] },
+  function (o, P) { var r = aroonCalc(P, o.period); return { s: [ln(r.u), ln(r.d, 'c2')] }; });
+pkDef('aroonosc', 'osc', 'Aroon Osc.', '#ff8a3d', [fL('period', 'period', 14, 2, 500)], { zero: true, bounds: [-100, 100], levels: [-50, 50] },
+  function (o, P) { var r = aroonCalc(P, o.period); return { s: [ln(qSub(r.u, r.d))] }; });
+pkDef('bop', 'osc', 'Balance of Power', '#e0a43a', [fL('smooth', 'smooth', 1, 1, 200)], { zero: true },
+  function (o, P) { var r = qMap(P.m, function (i) { var d = P.h[i] - P.l[i]; return d > 0 ? (P.c[i] - P.o[i]) / d : 0; }); return { s: [ln(o.smooth > 1 ? qSma(r, o.smooth) : r)] }; });
+pkDef('bbpb', 'osc', 'Bollinger Bands %B', '#19c3d8', [fL('period', 'period', 20, 2, 1000), fNum('mult', 'mult', 0.1, 20, 2, 0.1), fSrc()], { levels: [0, 0.5, 1] },
+  function (o, P) { var a = P.src(o.src); var mid = qSma(a, o.period); var sd = qStd(a, o.period); return { s: [ln(qMap(P.m, function (i) { return sd[i] > 0 ? (a[i] - mid[i] + o.mult * sd[i]) / (2 * o.mult * sd[i]) : 0.5; }))] }; });
+pkDef('bbw', 'osc', 'Bollinger Bands Width', '#19c3d8', [fL('period', 'period', 20, 2, 1000), fNum('mult', 'mult', 0.1, 20, 2, 0.1), fSrc()], 0,
+  function (o, P) { var a = P.src(o.src); var mid = qSma(a, o.period); var sd = qStd(a, o.period); return { s: [ln(qMap(P.m, function (i) { return 2 * o.mult * sd[i] / mid[i]; }))] }; });
+pkDef('bbp', 'osc', 'Bull Bear Power', '#26a65b', [fL('period', 'period', 13, 1, 500)], { zero: true },
+  function (o, P) { var e = qEma(P.c, o.period); return { s: [hs(qMap(P.m, function (i) { return P.h[i] - e[i]; })), hs(qMap(P.m, function (i) { return P.l[i] - e[i]; }))] }; });
+pkDef('cmf', 'osc', 'Chaikin Money Flow', '#26a65b', [fL('period', 'period', 20, 1, 500)], { zero: true },
+  function (o, P) {
+    var f = qMap(P.m, function (i) { var d = P.h[i] - P.l[i]; return d > 0 ? ((P.c[i] - P.l[i]) - (P.h[i] - P.c[i])) / d * P.v[i] : 0; }); var a = qSum(f, o.period); var b = qSum(P.v, o.period);
+    return { s: [ln(qMap(P.m, function (i) { return b[i] > 0 ? a[i] / b[i] : 0; }))] };
+  });
+pkDef('cho', 'osc', 'Chaikin Osc.', '#ff8a3d', [fL('fast', 'fast', 3, 1, 200), fL('slow', 'slow', 10, 2, 400)], { zero: true },
+  function (o, P) { var ad = qAd(P); return { s: [ln(qSub(qEma(ad, o.fast), qEma(ad, o.slow)))] }; });
+pkDef('chv', 'osc', 'Chaikin Volatility', '#b36bff', [fL('period', 'period', 10, 1, 500), fL('roc', 'ROC length', 10, 1, 500)], { zero: true },
+  function (o, P) { var e = qEma(qSub(P.h, P.l), o.period); return { s: [ln(qMap(P.m, function (i) { return i >= o.roc && e[i - o.roc] > 0 ? 100 * (e[i] - e[i - o.roc]) / e[i - o.roc] : NaN; }))] }; });
+pkDef('cmo', 'osc', 'Chande Momentum Osc.', '#e0a43a', [fL('period', 'period', 9, 1, 500), fSrc()], { zero: true, bounds: [-100, 100], levels: [-50, 50] },
+  function (o, P) {
+    var a = P.src(o.src); var up = qMap(P.m, function (i) { return i ? Math.max(a[i] - a[i - 1], 0) : NaN; }); var dn = qMap(P.m, function (i) { return i ? Math.max(a[i - 1] - a[i], 0) : NaN; });
+    var su = qSum(up, o.period); var sd = qSum(dn, o.period);
+    return { s: [ln(qMap(P.m, function (i) { return su[i] + sd[i] > 0 ? 100 * (su[i] - sd[i]) / (su[i] + sd[i]) : 0; }))] };
+  });
+pkDef('chop', 'osc', 'Choppiness Index', '#ff6fb5', [fL('period', 'period', 14, 2, 500)], { bounds: [0, 100], levels: [38.2, 61.8] },
+  function (o, P) {
+    var s = qSum(qTr(P), o.period); var hh = qHH(P.h, o.period); var ll = qLL(P.l, o.period);
+    return { s: [ln(qMap(P.m, function (i) { return hh[i] - ll[i] > 0 ? 100 * Math.log(s[i] / (hh[i] - ll[i])) / Math.LN10 / (Math.log(o.period) / Math.LN10) : NaN; }))] };
+  });
+pkDef('crsi', 'osc', 'Connors RSI', '#b36bff', [fL('rsi', 'RSI length', 3, 2, 100), fL('ud', 'Streak RSI length', 2, 2, 100), fL('rank', 'Rank length', 100, 2, 500)], { bounds: [0, 100], levels: [30, 70] },
+  function (o, P) {
+    var m = P.m; var c = P.c; var r1 = calcRsi(c, o.rsi); var st = new Float64Array(m); var i; var j;
+    for (i = 1; i < m; i++) st[i] = c[i] > c[i - 1] ? (st[i - 1] > 0 ? st[i - 1] + 1 : 1) : (c[i] < c[i - 1] ? (st[i - 1] < 0 ? st[i - 1] - 1 : -1) : 0);
+    var r2 = calcRsi(st, o.ud); var rc = nanArr(m); var out = nanArr(m);
+    for (i = 1; i < m; i++) rc[i] = c[i] / c[i - 1] - 1;
+    for (i = o.rank + 1; i < m; i++) {
+      var n = 0; for (j = i - o.rank; j < i; j++) if (rc[j] <= rc[i]) n++;
+      if (r1[i] === r1[i] && r2[i] === r2[i]) out[i] = (r1[i] + r2[i] + 100 * n / o.rank) / 3;
+    }
+    return { s: [ln(out)] };
+  });
+pkDef('cop', 'osc', 'Coppock Curve', '#a3e635', [fL('wma', 'WMA length', 10, 1, 200), fL('lng', 'Long ROC', 14, 1, 200), fL('sht', 'Short ROC', 11, 1, 200), fSrc()], { zero: true },
+  function (o, P) {
+    var a = P.src(o.src); var r = qMap(P.m, function (i) { return i >= o.lng && i >= o.sht ? 100 * (a[i] / a[i - o.lng] - 1) + 100 * (a[i] / a[i - o.sht] - 1) : NaN; });
+    return { s: [ln(qWma(r, o.wma))] };
+  });
+pkDef('dpo', 'osc', 'Detrended Price Osc.', '#c08457', [fL('period', 'period', 21, 2, 500), fSrc()], { zero: true },
+  function (o, P) { var a = P.src(o.src); var s = qSma(a, o.period); var b = Math.floor(o.period / 2) + 1; return { s: [ln(qMap(P.m, function (i) { return i >= b ? a[i] - s[i - b] : NaN; }))] }; });
+pkDef('dmi', 'osc', 'Directional Mov. Index', '#f0b90b', [fL('period', 'period', 14, 2, 200)], { levels: [20] },
+  function (o, P) {
+    var x = calcAdx(P.h, P.l, P.c, o.period); var p = o.period;
+    return { s: [ln(x.pdi, '#26a65b', { thin: true }), ln(x.mdi, '#ff4a33', { thin: true }), ln(x.adx), ln(qMap(P.m, function (i) { return i >= p && x.adx[i] === x.adx[i] && x.adx[i - p] === x.adx[i - p] ? (x.adx[i] + x.adx[i - p]) / 2 : NaN; }), 'c2', { thin: true })], main: 2 };
+  });
+pkDef('eom', 'osc', 'Ease of Movement', '#4a9eff', [fL('period', 'period', 14, 1, 500), fNum('div', 'Divisor', 1, 1000000000, 10000, 1, true)], { zero: true },
+  function (o, P) {
+    var r = qMap(P.m, function (i) { var d = P.h[i] - P.l[i]; if (!i) return NaN; var bx = d > 0 ? (P.v[i] / o.div) / d : 0; return bx > 0 ? ((P.h[i] + P.l[i]) / 2 - (P.h[i - 1] + P.l[i - 1]) / 2) / bx : 0; });
+    return { s: [ln(qSma(r, o.period))] };
+  });
+pkDef('efi', 'osc', 'Elder Force Index', '#ff8a3d', [fL('period', 'period', 13, 1, 500)], { zero: true },
+  function (o, P) { var ch = qChg(P.c); return { s: [ln(qEma(qMap(P.m, function (i) { return ch[i] * P.v[i]; }), o.period))] }; });
+pkDef('fisher', 'osc', 'Fisher Transform', '#4a9eff', [fL('period', 'period', 9, 1, 500)], { color2: '#ff8a3d', c2l: 'Trigger', levels: [-1.5, 1.5], zero: true },
+  function (o, P) {
+    var a = P.src('hl2'); var hh = qHH(a, o.period); var ll = qLL(a, o.period); var m = P.m; var f = nanArr(m); var g = nanArr(m); var v = 0; var fp = 0; var fv = 0;
+    for (var i = 0; i < m; i++) {
+      if (!(hh[i] === hh[i])) continue;
+      v = 0.66 * ((a[i] - ll[i]) / Math.max(hh[i] - ll[i], 0.001) - 0.5) + 0.67 * v; if (v > 0.999) v = 0.999; else if (v < -0.999) v = -0.999;
+      fv = 0.5 * Math.log((1 + v) / (1 - v)) + 0.5 * fp; f[i] = fv; g[i] = fp; fp = fv;
+    }
+    return { s: [ln(f), ln(g, 'c2')] };
+  });
+function logRet(P) { var r = nanArr(P.m); for (var i = 1; i < P.m; i++) r[i] = Math.log(P.c[i] / P.c[i - 1]); return r; }
+pkDef('hv', 'osc', 'Historical Volatility', '#ff4a33', [fL('period', 'period', 10, 2, 500)], 0,
+  function (o, P) { var s = qStd(logRet(P), o.period); var k = 100 * Math.sqrt(qPpy()); return { s: [ln(qMap(P.m, function (i) { return s[i] * k; }))] }; });
+pkDef('volcc', 'osc', 'Volatility C-to-C', '#ff6fb5', [fL('period', 'period', 10, 2, 500)], 0,
+  function (o, P) { var s = qStd(logRet(P), o.period); var k = 100 * Math.sqrt(qPpy() * o.period / (o.period - 1)); return { s: [ln(qMap(P.m, function (i) { return s[i] * k; }))] }; });
+pkDef('volzt', 'osc', 'Volatility Zero Trend C-to-C', '#c08457', [fL('period', 'period', 10, 1, 500)], 0,
+  function (o, P) { var r = logRet(P); var s = qSum(qMap(P.m, function (i) { return r[i] * r[i]; }), o.period); var k = 100 * Math.sqrt(qPpy() / o.period); return { s: [ln(qMap(P.m, function (i) { return Math.sqrt(s[i]) * k; }))] }; });
+pkDef('volohlc', 'osc', 'Volatility O-H-L-C', '#a3e635', [fL('period', 'period', 10, 1, 500)], 0,
+  function (o, P) {
+    var g = qMap(P.m, function (i) { var a = Math.log(P.h[i] / P.l[i]); var b = Math.log(P.c[i] / P.o[i]); return 0.5 * a * a - (2 * Math.LN2 - 1) * b * b; });
+    var s = qSma(g, o.period); var k = 100 * Math.sqrt(qPpy()); return { s: [ln(qMap(P.m, function (i) { return s[i] > 0 ? Math.sqrt(s[i]) * k : 0; }))] };
+  });
+pkDef('klinger', 'osc', 'Klinger Oscillator', '#4a9eff', [fL('fast', 'fast', 34, 1, 400), fL('slow', 'slow', 55, 2, 600), fL('signal', 'signal', 13, 1, 200)], { color2: '#ff8a3d', c2l: 'sigline', zero: true },
+  function (o, P) {
+    var m = P.m; var tp = P.src('hlc3'); var vf = nanArr(m); var cm = 0; var tr = 0; var pd = 0; var i;
+    for (i = 1; i < m; i++) {
+      var t = tp[i] > tp[i - 1] ? 1 : -1; var dm = P.h[i] - P.l[i];
+      cm = t === tr ? cm + dm : pd + dm; tr = t; pd = dm;
+      vf[i] = cm > 0 ? P.v[i] * Math.abs(2 * dm / cm - 1) * t * 100 : 0;
+    }
+    var ko = qSub(qEma(vf, o.fast), qEma(vf, o.slow)); return { s: [ln(ko), ln(qEma(ko, o.signal), 'c2')] };
+  });
+pkDef('kst', 'osc', 'Know Sure Thing', '#26a65b', [fL('r1', 'ROC 1', 10, 1, 300), fL('r2', 'ROC 2', 15, 1, 300), fL('r3', 'ROC 3', 20, 1, 300), fL('r4', 'ROC 4', 30, 1, 300),
+  fL('s1', 'SMA 1', 10, 1, 300), fL('s2', 'SMA 2', 10, 1, 300), fL('s3', 'SMA 3', 10, 1, 300), fL('s4', 'SMA 4', 15, 1, 300), fL('signal', 'signal', 9, 1, 200)], { color2: '#ff8a3d', c2l: 'sigline', zero: true },
+  function (o, P) {
+    var c = P.c; function rc(n) { return qMap(P.m, function (i) { return i >= n ? 100 * (c[i] / c[i - n] - 1) : NaN; }); }
+    var a = qSma(rc(o.r1), o.s1); var b = qSma(rc(o.r2), o.s2); var d = qSma(rc(o.r3), o.s3); var e = qSma(rc(o.r4), o.s4);
+    var k = qMap(P.m, function (i) { return a[i] + 2 * b[i] + 3 * d[i] + 4 * e[i]; }); return { s: [ln(k), ln(qSma(k, o.signal), 'c2')] };
+  });
+pkDef('lrs', 'osc', 'Linear Regression Slope', '#19c3d8', [fL('period', 'period', 14, 2, 500), fSrc()], { zero: true },
+  function (o, P) { return { s: [ln(qReg(P.src(o.src), o.period).sl)] }; });
+pkDef('mass', 'osc', 'Mass Index', '#ff8a3d', [fL('ema', 'EMA length', 9, 1, 100), fL('period', 'Sum length', 25, 1, 200)], { levels: [26.5, 27] },
+  function (o, P) { var e1 = qEma(qSub(P.h, P.l), o.ema); var e2 = qEma(e1, o.ema); return { s: [ln(qSum(qMap(P.m, function (i) { return e1[i] / e2[i]; }), o.period))] }; });
+pkDef('mom', 'osc', 'Momentum', '#4a9eff', [fL('period', 'period', 10, 1, 500), fSrc()], { zero: true },
+  function (o, P) { var a = P.src(o.src); return { s: [ln(qMap(P.m, function (i) { return i >= o.period ? a[i] - a[i - o.period] : NaN; }))] }; });
+pkDef('netvol', 'osc', 'Net Volume', '#9aa3ad', [], { zero: true },
+  function (o, P) { return { s: [hs(qMap(P.m, function (i) { return i ? (P.c[i] > P.c[i - 1] ? P.v[i] : (P.c[i] < P.c[i - 1] ? -P.v[i] : 0)) : NaN; }))] }; });
+pkDef('ppo', 'osc', 'Price Osc.', '#4a9eff', [fL('fast', 'fast', 10, 1, 200), fL('slow', 'slow', 21, 2, 400), fSrc()], { zero: true },
+  function (o, P) { var a = P.src(o.src); var f = calcEma(a, o.fast); var s = calcEma(a, o.slow); return { s: [ln(qMap(P.m, function (i) { return 100 * (f[i] - s[i]) / s[i]; }))] }; });
+pkDef('pvt', 'osc', 'Price Volume Trend', '#a3e635', [], 0,
+  function (o, P) { var r = new Float64Array(P.m); var s = 0; for (var i = 1; i < P.m; i++) { s += (P.c[i] - P.c[i - 1]) / P.c[i - 1] * P.v[i]; r[i] = s; } return { s: [ln(r)] }; });
+pkDef('rci', 'osc', 'Rank Correlation Index', '#b36bff', [fL('period', 'period', 9, 2, 100), fSrc()], { zero: true, bounds: [-100, 100], levels: [-80, 80] },
+  function (o, P) {
+    var a = P.src(o.src); var p = o.period; var r = nanArr(P.m); var i; var j; var k;
+    for (i = p - 1; i < P.m; i++) {
+      var sd = 0;
+      for (j = 0; j < p; j++) { var rk = 1; for (k = 0; k < p; k++) if (a[i - p + 1 + k] > a[i - p + 1 + j]) rk++; var d = (p - j) - rk; sd += d * d; }
+      r[i] = (1 - 6 * sd / (p * (p * p - 1))) * 100;
+    }
+    return { s: [ln(r)] };
+  });
+pkDef('rvgi', 'osc', 'Relative Vigor Index', '#26a65b', [fL('period', 'period', 10, 1, 200)], { color2: '#ff4a33', c2l: 'sigline', zero: true },
+  function (o, P) {
+    function sw(f) { return qMap(P.m, function (i) { return i >= 3 ? (f(i) + 2 * f(i - 1) + 2 * f(i - 2) + f(i - 3)) / 6 : NaN; }); }
+    var nu = qSma(sw(function (i) { return P.c[i] - P.o[i]; }), o.period); var de = qSma(sw(function (i) { return P.h[i] - P.l[i]; }), o.period);
+    var r = qMap(P.m, function (i) { return de[i] ? nu[i] / de[i] : NaN; });
+    return { s: [ln(r), ln(qMap(P.m, function (i) { return i >= 3 ? (r[i] + 2 * r[i - 1] + 2 * r[i - 2] + r[i - 3]) / 6 : NaN; }), 'c2')] };
+  });
+pkDef('rvi', 'osc', 'Relative Volat. Index', '#ff6fb5', [fL('period', 'period', 14, 1, 500), fL('std', 'StdDev length', 10, 2, 500), fSrc()], { bounds: [0, 100], levels: [30, 70] },
+  function (o, P) {
+    var a = P.src(o.src); var sd = qStd(a, o.std); var up = qMap(P.m, function (i) { return i && sd[i] === sd[i] ? (a[i] > a[i - 1] ? sd[i] : 0) : NaN; }); var dn = qMap(P.m, function (i) { return i && sd[i] === sd[i] ? (a[i] <= a[i - 1] ? sd[i] : 0) : NaN; });
+    var u = qEma(up, o.period); var d = qEma(dn, o.period); return { s: [ln(qMap(P.m, function (i) { return u[i] + d[i] > 0 ? 100 * u[i] / (u[i] + d[i]) : 50; }))] };
+  });
+pkDef('smi', 'osc', 'SMI Ergodic Osc.', '#4a9eff', [fL('lng', 'Long length', 20, 1, 200), fL('sht', 'Short length', 5, 1, 200), fL('signal', 'signal', 5, 1, 200), fSrc()], { color2: '#ff8a3d', c2l: 'sigline', zero: true },
+  function (o, P) { var e = qTsi(P.src(o.src), o.sht, o.lng); var g = qEma(e, o.signal); return { s: [hs(qSub(e, g)), ln(e), ln(g, 'c2')], main: 1 }; });
+pkDef('stdev', 'osc', 'Standard Deviation', '#e0a43a', [fL('period', 'period', 20, 2, 1000), fSrc()], 0,
+  function (o, P) { return { s: [ln(qStd(P.src(o.src), o.period))] }; });
+pkDef('stderr', 'osc', 'Standard Error', '#c08457', [fL('period', 'period', 14, 3, 500), fSrc()], 0,
+  function (o, P) { return { s: [ln(qReg(P.src(o.src), o.period).se)] }; });
+pkDef('stochrsi', 'osc', 'Stochastic RSI', '#4a9eff', [fL('rsi', 'RSI length', 14, 2, 200), fL('st', 'Stochastic length', 14, 2, 200), fL('k', 'kper', 3, 1, 100), fL('d', 'dper', 3, 1, 100), fSrc()], { color2: '#ff8a3d', c2l: 'dline', bounds: [0, 100], levels: [20, 80] },
+  function (o, P) { var k = qSma(qStoch(calcRsi(P.src(o.src), o.rsi), o.st), o.k); return { s: [ln(k), ln(qSma(k, o.d), 'c2')] }; });
+pkDef('trendstr', 'osc', 'Trend Strength Index', '#19c3d8', [fL('period', 'period', 14, 3, 500), fSrc()], { zero: true, bounds: [-1, 1], levels: [-0.5, 0, 0.5] },
+  function (o, P) { return { s: [ln(qReg(P.src(o.src), o.period).r)] }; });
+pkDef('trix', 'osc', 'TRIX', '#26a65b', [fL('period', 'period', 18, 1, 500), fSrc()], { zero: true },
+  function (o, P) { var e = qEma(qEma(qEma(qLog(P.src(o.src)), o.period), o.period), o.period); return { s: [ln(qMap(P.m, function (i) { return i ? 10000 * (e[i] - e[i - 1]) : NaN; }))] }; });
+pkDef('tsi', 'osc', 'True Strength Index', '#4a9eff', [fL('lng', 'Long length', 25, 1, 200), fL('sht', 'Short length', 13, 1, 200), fL('signal', 'signal', 13, 1, 200), fSrc()], { color2: '#ff8a3d', c2l: 'sigline', zero: true },
+  function (o, P) { var t = qTsi(P.src(o.src), o.sht, o.lng); var e = qMap(P.m, function (i) { return t[i] * 100; }); return { s: [ln(e), ln(qEma(e, o.signal), 'c2')] }; });
+pkDef('uo', 'osc', 'Ultimate Osc.', '#ff8a3d', [fL('p1', 'Fast length', 7, 1, 100), fL('p2', 'Middle length', 14, 1, 200), fL('p3', 'Slow length', 28, 1, 400)], { bounds: [0, 100], levels: [30, 70] },
+  function (o, P) {
+    var bp = qMap(P.m, function (i) { return i ? P.c[i] - Math.min(P.l[i], P.c[i - 1]) : NaN; }); var tr = qMap(P.m, function (i) { return i ? Math.max(P.h[i], P.c[i - 1]) - Math.min(P.l[i], P.c[i - 1]) : NaN; });
+    var a = qSum(bp, o.p1); var b = qSum(tr, o.p1); var c = qSum(bp, o.p2); var d = qSum(tr, o.p2); var e = qSum(bp, o.p3); var f = qSum(tr, o.p3);
+    return { s: [ln(qMap(P.m, function (i) { return b[i] > 0 && d[i] > 0 && f[i] > 0 ? 100 * (4 * a[i] / b[i] + 2 * c[i] / d[i] + e[i] / f[i]) / 7 : NaN; }))] };
+  });
+pkDef('volosc', 'osc', 'Volume Osc.', '#9aa3ad', [fL('fast', 'fast', 5, 1, 200), fL('slow', 'slow', 10, 2, 400)], { zero: true },
+  function (o, P) { var f = qEma(P.v, o.fast); var s = qEma(P.v, o.slow); return { s: [hs(qMap(P.m, function (i) { return s[i] > 0 ? 100 * (f[i] - s[i]) / s[i] : NaN; }))] }; });
+pkDef('vortex', 'osc', 'Vortex Indicator', '#26a65b', [fL('period', 'period', 14, 2, 500)], { color2: '#ff4a33', c2l: 'VI -', levels: [1] },
+  function (o, P) {
+    var tr = qSum(qTr(P), o.period); var vp = qSum(qMap(P.m, function (i) { return i ? Math.abs(P.h[i] - P.l[i - 1]) : NaN; }), o.period); var vm = qSum(qMap(P.m, function (i) { return i ? Math.abs(P.l[i] - P.h[i - 1]) : NaN; }), o.period);
+    return { s: [ln(qMap(P.m, function (i) { return vp[i] / tr[i]; })), ln(qMap(P.m, function (i) { return vm[i] / tr[i]; }), 'c2')] };
+  });
+pkDef('woodies', 'osc', 'Woodies CCI', '#ff8a3d', [fL('period', 'period', 14, 2, 500), fL('turbo', 'Turbo length', 6, 2, 200)], { color2: '#4a9eff', c2l: 'Turbo CCI', zero: true, levels: [-100, 100] },
+  function (o, P) { var tp = P.src('hlc3'); var c = calcCci(tp, o.period); return { s: [hs(c), ln(c), ln(calcCci(tp, o.turbo), 'c2')], main: 1 }; });
+pkDef('ulcer', 'osc', 'Ulcer Index', '#ff4a33', [fL('period', 'period', 14, 2, 500), fSrc()], 0,
+  function (o, P) { var a = P.src(o.src); var hh = qHH(a, o.period); var r = qMap(P.m, function (i) { var q = 100 * (a[i] - hh[i]) / hh[i]; return q * q; }); var s = qSma(r, o.period); return { s: [ln(qMap(P.m, function (i) { return Math.sqrt(s[i]); }))] }; });
+pkDef('pvo', 'osc', 'Percentage Volume Osc.', '#4a9eff', [fL('fast', 'fast', 12, 1, 200), fL('slow', 'slow', 26, 2, 400), fL('signal', 'signal', 9, 1, 200)], { color2: '#ff8a3d', c2l: 'sigline', zero: true },
+  function (o, P) {
+    var f = qEma(P.v, o.fast); var s = qEma(P.v, o.slow); var r = qMap(P.m, function (i) { return s[i] > 0 ? 100 * (f[i] - s[i]) / s[i] : NaN; }); var g = qEma(r, o.signal);
+    return { s: [hs(qSub(r, g)), ln(r), ln(g, 'c2')], main: 1 };
+  });
+pkDef('stc', 'osc', 'Schaff Trend Cycle', '#26a65b', [fL('fast', 'fast', 23, 1, 200), fL('slow', 'slow', 50, 2, 400), fL('cycle', 'Cycle length', 10, 2, 200), fSrc()], { bounds: [0, 100], levels: [25, 75] },
+  function (o, P) {
+    var a = P.src(o.src); var mc = qSub(calcEma(a, o.fast), calcEma(a, o.slow)); var n = P.m; var i;
+    function fk(x, st) {
+      var hi = qHH(x, o.cycle); var lo = qLL(x, o.cycle); var r = nanArr(n); var pv = 0;
+      for (i = 0; i < n; i++) { if (!(hi[i] === hi[i])) continue; if (hi[i] - lo[i] > 0) pv = 100 * (x[i] - lo[i]) / (hi[i] - lo[i]); r[i] = pv; } return r;
+    }
+    function sm(x) { var r = nanArr(n); var pv = NaN; for (i = 0; i < n; i++) { if (!(x[i] === x[i])) continue; pv = pv === pv ? pv + 0.5 * (x[i] - pv) : x[i]; r[i] = pv; } return r; }
+    return { s: [ln(sm(fk(sm(fk(mc)))))] };
+  });
+pkDef('disparity', 'osc', 'Disparity Index', '#e0a43a', [fL('period', 'period', 14, 1, 500), fMT(), fSrc()], { zero: true },
+  function (o, P) { var a = P.src(o.src); var s = calcMA(o.ma, a, P.v, o.period); return { s: [ln(qMap(P.m, function (i) { return 100 * (a[i] - s[i]) / s[i]; }))] }; });
+pkDef('qstick', 'osc', 'Qstick', '#19c3d8', [fL('period', 'period', 8, 1, 500), fMT()], { zero: true },
+  function (o, P) { return { s: [ln(calcMA(o.ma, qSub(P.c, P.o), P.v, o.period))] }; });
+pkDef('adr', 'osc', 'Average Range', '#ff6fb5', [fL('period', 'period', 14, 1, 500)], 0,
+  function (o, P) { return { s: [ln(qSma(qSub(P.h, P.l), o.period))] }; });
+
+function computePk(o, idx, full) {
+  var m = idx.length;
+  var P = { m: m, o: srcArr('o', idx), h: srcArr('h', idx), l: srcArr('l', idx), c: srcArr('c', idx), v: srcArr('v', idx),
+    src: function (key) { return srcArr(key, idx); }, tm: function (k) { return D.t0 + idx[k] * D.step; } };
+  var r = PK[o.type](o, P); var out = { series: [], band: null, main: null }; var i;
+  for (i = 0; i < r.s.length; i++) { var s = r.s[i]; s.a = full(s.a); out.series.push(s); }
+  if (r.band) out.band = { u: out.series[r.band[0]].a, l: out.series[r.band[1]].a };
+  out.main = out.series[r.main || 0].a;
+  if (o.offset) applyOffset(out, o.offset | 0);
+  return out;
+}
+/** Полные названия сокращённых в меню: для поиска и SEO-списка. */
+var FULL = {volzt: 'Volatility Zero Trend Close-to-Close', volcc: 'Volatility Close-to-Close', pvo: 'Percentage Volume Oscillator', cmo: 'Chande Momentum Oscillator', dpo: 'Detrended Price Oscillator', dmi: 'Directional Movement Index', ad: 'Accumulation/Distribution', rvi: 'Relative Volatility Index', asi: 'Accumulative Swing Index', ac: 'Accelerator Oscillator', smi: 'SMI Ergodic Oscillator', aroonosc: 'Aroon Oscillator', cho: 'Chaikin Oscillator', uo: 'Ultimate Oscillator', volosc: 'Volume Oscillator', ppo: 'Price Oscillator', ao: 'Awesome Oscillator'};
+/** Порядок в меню — по алфавиту названий; в «Inds.» и «Osc.» делит по полю cat. */
+var IND_ORDER = { ind: [], osc: [] };
+(function () {
+  var k;
+  for (k in INDDEF) if (k !== 'fx') IND_ORDER[INDDEF[k].cat === 'osc' ? 'osc' : 'ind'].push(k);
+  function cmp(a, b) { var x = INDDEF[a].title.toLowerCase(); var y = INDDEF[b].title.toLowerCase(); return x < y ? -1 : (x > y ? 1 : 0); }
+  IND_ORDER.ind.sort(cmp); IND_ORDER.osc.sort(cmp);
+})();
+// PK-END
 var MENU_CAT = { mIndList: 'ind', mOscList: 'osc' };
 function catOfO(o) { if (o.type === 'fx') return 'fx'; return defOf(o).cat === 'osc' ? 'osc' : 'ind'; }
 
@@ -3150,7 +3591,7 @@ function computeInd(o) {
     case 'vwap':
       a = full(calcVwap(idx, o.anchor)); out.series.push({ k: 'line', a: a }); out.main = a; break;
     case 'fx': return computeFx(o, idx, full);
-    default: return computeOsc(o, idx, full);
+    default: return PK[o.type] ? computePk(o, idx, full) : computeOsc(o, idx, full);
   }
   if (o.offset) applyOffset(out, o.offset | 0);
   return out;
@@ -3208,14 +3649,14 @@ function calcLsma(a, p) {                                       // значен�
   }
   return r;
 }
-function calcAlma(a, p) {                                       // Arnaud Legoux: гауссовы веса, смещение 0,85, сигма 6
-  var m = a.length; var r = nanArr(m); var off = Math.floor(0.85 * (p - 1)); var sg = p / 6; var w = []; var wsum = 0; var j; var i;
+function calcAlma(a, p, offr, sigma) {                          // Arnaud Legoux: гауссовы веса; по умолчанию смещение 0,85, сигма 6
+  var m = a.length; var r = nanArr(m); var off = Math.floor((offr === undefined ? 0.85 : offr) * (p - 1)); var sg = p / (sigma || 6); var w = []; var wsum = 0; var j; var i;
   for (j = 0; j < p; j++) { var x = (j - off) / sg; var wj = Math.exp(-x * x / 2); w.push(wj); wsum += wj; }
   for (i = p - 1; i < m; i++) { var s = 0; for (j = 0; j < p; j++) s += w[j] * a[i - p + 1 + j]; r[i] = s / wsum; }
   return r;
 }
-function calcKama(a, p) {                                       // Kaufman: быстрая 2, медленная 30
-  var m = a.length; var r = nanArr(m); var fs = 2 / 3; var ss = 2 / 31; var e = 0; var i;
+function calcKama(a, p, fa, sl) {                               // Kaufman: быстрая 2, медленная 30 по умолчанию
+  var m = a.length; var r = nanArr(m); var fs = 2 / ((fa || 2) + 1); var ss = 2 / ((sl || 30) + 1); var e = 0; var i;
   if (m <= p) return r;
   e = a[p - 1]; r[p - 1] = e;
   for (i = p; i < m; i++) {
@@ -3591,7 +4032,7 @@ function drawInds(iL, iR) {
       ctx.setLineDash(se.dash ? [4, 4] : dashOf(o.style));
       if (se.k === 'line') polyline(se.a, iL, iR);
       else if (se.k === 'dots') {
-        ctx.fillStyle = o.color;
+        ctx.fillStyle = ctx.strokeStyle;
         for (i = iL; i <= iR; i++) if (se.a[i] === se.a[i]) ctx.fillRect(Math.round(xOfT(D.t0 + i * D.step) + barW / 2) - 1, Math.round(yOfP(se.a[i])) - 1, 3, 3);
       } else if (se.k === 'st') {
         for (var pass = 0; pass < 2; pass++) {
@@ -3974,20 +4415,54 @@ function buildMenu(listId) {
   }
   var cat = MENU_CAT[listId]; var order = IND_ORDER[cat];
   addSep(list, T('add'));
-  for (i = 0; i < order.length; i++) (function (type) {
-    list.appendChild(dotBtn(INDDEF[type].color, INDDEF[type].title, function () { addInd(type); }));
-  })(order[i]);
+  var sr = mk('div', 'msearch'); var inp = mk('input'); var lb = mk('button', ''); var sc = mk('div', 'mscroll'); var items = [];
+  inp.type = 'text'; inp.placeholder = T('search'); inp.setAttribute('autocomplete', 'off'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.setAttribute('spellcheck', 'false'); inp.setAttribute('enterkeyhint', 'search');
+  lb.type = 'button'; lb.title = T('search'); lb.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"></circle><path d="M15.5 15.5L21 21"></path></svg>';
+  sr.appendChild(inp); sr.appendChild(lb); list.appendChild(sr); list.appendChild(sc);
+  for (i = 0; i < order.length; i++) (function (type, k) {
+    var b = dotBtn(INDDEF[type].color, INDDEF[type].title, function () { addInd(type); }); items.push({ b: b, t: INDDEF[type].title.toLowerCase(), n: (INDDEF[type].title + ' ' + (FULL[type] || '') + ' ' + type).toLowerCase(), k: k }); sc.appendChild(b);
+  })(order[i], i);
+  function arrange() {                                           // совпавшие поднимаются наверх (между собой — по алфавиту), остальные ниже в своём порядке
+    var q = trimS(inp.value).toLowerCase(); var a = items.slice(); var j;
+    function rank(it) {                                          // 0 — название начинается с запроса, 1 — с него начинается любое слово, 2 — запрос внутри слова, 3 — совпал только код, 9 — нет
+      if (!q) return 9; var t = it.t; var at = t.indexOf(q);
+      if (at === 0) return 0;
+      if (at > 0) { var j = t.indexOf(' ' + q); if (j < 0) j = t.indexOf('/' + q); if (j < 0) j = t.indexOf('-' + q); return j >= 0 ? 1 : 2; }
+      return it.n.indexOf(q) >= 0 ? 3 : 9;
+    }
+    for (j = 0; j < a.length; j++) a[j].r = rank(a[j]);
+    a.sort(function (x, y) { return (x.r - y.r) || (x.k - y.k); });
+    for (j = 0; j < a.length; j++) sc.appendChild(a[j].b);
+    sc.scrollTop = 0;
+  }
+  inp.oninput = arrange;
+  inp.onkeydown = function (e) { e.stopPropagation(); if (e.keyCode === 27) closeMenus(); if (e.keyCode === 13) { e.preventDefault(); inp.blur(); } };   // Enter убирает экранную клавиатуру
+  lb.onclick = function () { inp.blur(); };                                                                      // и тап по лупе тоже
   var have = false;
   for (i = 0; i < IND.length; i++) if (catOfO(IND[i]) === cat) {
     if (!have) { addSep(list, T('objects')); have = true; }
-    (function (o) { list.appendChild(dotBtn(o.color, indName(o), function () { closeMenus(); openEditor('i', o); })); })(IND[i]);
+    (function (o) { var ub = dotBtn(o.color, indName(o), function () { closeMenus(); openEditor('i', o); }); ub.title = indName(o); list.appendChild(ub); })(IND[i]);
   }
+}
+/** Списки Inds. и Osc.: одна ширина = min(15.5rem, место от левого края кнопки Osc. до правого края экрана), чтобы левый край списка совпадал с левым краём кнопки; длинные названия — мельче шрифт (не меньше 0.65rem), остальное — троеточие. */
+function fitMenu(l) {
+  var rem = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
+  var ob = byId('mOscBtn').getBoundingClientRect().left;
+  var w = Math.min(15.5 * rem, window.innerWidth - 4 - ob);
+  l.style.width = Math.max(10 * rem, w) + 'px';
+  var bs = l.querySelectorAll('.mscroll button, button.cut, .menuList > button'); var rt = []; var i; var b;
+  for (i = 0; i < bs.length; i++) { b = bs[i]; b.style.fontSize = ''; rt.push(b.scrollWidth > b.clientWidth + 1 ? b.clientWidth / b.scrollWidth : 1); }
+  for (i = 0; i < bs.length; i++) if (rt[i] < 1) bs[i].style.fontSize = Math.max(0.65, 0.9 * rt[i] * 0.97).toFixed(2) + 'rem';
 }
 function toggleMenu(listId) {
   var l = byId(listId); var was = /\bshow\b/.test(l.className);
   closeMenus();
   if (!was) {
-    buildMenu(listId); l.style.left = ''; l.style.right = ''; l.className = 'menuList show'; var rc = l.getBoundingClientRect();
+    buildMenu(listId); l.style.left = ''; l.style.right = ''; l.className = 'menuList show';
+    if (listId === 'mIndList' || listId === 'mOscList') fitMenu(l);   // одинаковая ширина обоих списков; левый край — по кнопке, правый — в экран
+    var rc = l.getBoundingClientRect();
+    var si = l.querySelector ? l.querySelector('.msearch input') : null;
+    try { if (si && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) si.focus(); } catch (e0) { }   // на сенсорных экранах без автофокуса, чтобы не выскакивала клавиатура
     if (listId === 'mCustomList') {                              // Custom: правый край списка — по правому краю кнопки; влево сколько нужно, но в экран
       l.style.left = 'auto'; l.style.right = '0'; rc = l.getBoundingClientRect();
       if (rc.left < 4) l.style.right = (rc.left - 4) + 'px';
@@ -4303,6 +4778,7 @@ function nameState() {
 }
 function edRefresh() {
   if (!ed) return;
+  fitDef(byId('panel'));
   if (ed.isNew && ed.kind === 'i' && !ed.nmTouched) {           // у нового индикатора имя следует за параметрами, пока его не правили вручную
     var base = indDefName(ed.draft); var cand = base; var n = 2;
     while (nameTaken(cand, ed.draft)) { cand = base + ' (' + n + ')'; n++; }
@@ -4340,11 +4816,25 @@ function setBad(key, on, node) { ed.bad[key] = on; if (node) node.className = no
 var LN_SOLID = '<svg width="22" height="6" viewBox="0 0 22 6" aria-hidden="true"><path d="M1 3h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 var LN_DASH = '<svg width="22" height="6" viewBox="0 0 22 6" aria-hidden="true"><path d="M1 3h20" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5 3"/></svg>';
 var LN_DOT = '<svg width="22" height="6" viewBox="0 0 22 6" aria-hidden="true"><path d="M1 3h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.1 4.2"/></svg>';
+/** Текстовые кнопки окна имеют стандартную ширину; если перевод не влезает — шрифт мельче (не меньше 0.6rem). */
+/** Кнопка заголовка раздела (Default/Syntax): левый край — как у Save, т.е. ширина --btnW минус реальная ширина полосы прокрутки тела окна. */
+function fitDef(p) {
+  var pb = p.querySelector ? p.querySelector('.pbody') : null; var ds = p.querySelectorAll('.pdef'); var i;
+  if (!pb || !ds.length) return;
+  var sb = pb.offsetWidth - pb.clientWidth;
+  for (i = 0; i < ds.length; i++) ds[i].style.width = 'calc(var(--btnW) - ' + sb + 'px)';
+}
+function fitTx(root) {
+  var bs = root.querySelectorAll('button[data-tx]'); var rt = []; var i; var b;
+  for (i = 0; i < bs.length; i++) { b = bs[i]; b.style.fontSize = ''; rt.push(b.scrollWidth > b.clientWidth ? (b.clientWidth - 2) / b.scrollWidth : 1); }
+  for (i = 0; i < bs.length; i++) if (rt[i] < 1) bs[i].style.fontSize = Math.max(0.6, 0.9 * rt[i]).toFixed(2) + 'rem';
+}
 function segCtl(opts, get, set, titles) {
   var box = mk('div', 'seg'); var bs = []; var i;
   function mark() { for (var j = 0; j < bs.length; j++) bs[j].className = bs[j].getAttribute('data-v') === String(get()) ? 'on' : ''; }
   for (i = 0; i < opts.length; i++) (function (v, text, ttl) {
     var b = mk('button', '', text.charAt(0) === '<' ? '' : text); b.type = 'button'; b.setAttribute('data-v', v); if (ttl) b.title = ttl;
+    if (text.charAt(0) !== '<' && !/^\d{1,2}$/.test(text)) b.setAttribute('data-tx', '1');
     if (text.charAt(0) === '<') { b.innerHTML = text; b.setAttribute('data-ln', '1'); }
     b.onclick = function () { set(v); mark(); edRefresh(); };
     bs.push(b); box.appendChild(b);
@@ -4481,7 +4971,7 @@ function buildEditor() {
     var hasNum = d.type === 'fx' || def.cat === 'osc';
     for (i = 0; i < def.fields.length; i++) if (def.fields[i].type === 'num' && !def.fields[i].deco) hasNum = true;
     var bdf = null;
-    if (hasNum) { bdf = mk('button', 'pdef', T('defaults')); bdf.type = 'button'; bdf.title = T('defaults_t'); bdf.onclick = resetDefaults; }
+    if (hasNum) { bdf = mk('button', 'pdef', T('defaults')); bdf.type = 'button'; bdf.setAttribute('data-tx', '1'); bdf.title = T('defaults_t'); bdf.onclick = resetDefaults; }
     var psec = edSec(T('params'), bdf); body.appendChild(psec);
     var pbox = mk('div', 'pbox'); body.appendChild(pbox); ed.pbox = pbox; ed.psec = psec;
     fillParams();
@@ -4514,6 +5004,7 @@ function buildEditor() {
   foot.appendChild(bd); foot.appendChild(fr); p.appendChild(foot);
   ed.btnSave = bs; ed.btnDel = bd;
   p.style.display = ed.min ? 'none' : 'flex'; body.scrollTop = oldBody;
+  fitDef(p); fitTx(p);
   edRefresh();
 }
 /** «По умолчанию»: расчётные числовые параметры индикатора возвращаются к классическим; имя и оформление не трогаются. */
@@ -4521,11 +5012,12 @@ function fillParams() {
   var def = ed.def; var d = ed.draft; var pb = ed.pbox; var i;
   pb.innerHTML = '';
   for (i = 0; i < def.fields.length; i++) if (!def.fields[i].deco) pb.appendChild(fieldRow(def.fields[i]));
+  fitDef(byId('panel')); fitTx(pb);
   if (d.type === 'fx') ed.psec.style.display = def.fields.length ? '' : 'none';
 }
 /** Окно формулы: текст, состояние разбора и краткая справка; при смене набора параметров поля параметров перестраиваются. */
 function fxFormulaBlock(body) {
-  var d = ed.draft; var help = mk('button', 'pdef', T('fx_syntax')); help.type = 'button';
+  var d = ed.draft; var help = mk('button', 'pdef', T('fx_syntax')); help.type = 'button'; help.setAttribute('data-tx', '1');
   body.appendChild(edSec(T('fx_formula'), help));
   var ta = mk('textarea', 'fxta'); ta.value = d.code; ta.spellcheck = false; ta.setAttribute('autocapitalize', 'off'); ta.setAttribute('autocorrect', 'off'); ta.setAttribute('wrap', 'off'); ta.rows = 9;
   var st = mk('div', 'fxst'); ed.fxStatus = st;
@@ -4599,7 +5091,7 @@ function updateButtons() {
 }
 /** Стакан и сделки этой пары — отдельная страница (book.html), та же пара и биржа, тот же язык. */
 function openBook() {
-  location.href = 'book-local.html?ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + '&lang=' + encodeURIComponent(freshLang());
+  location.href = 'book-local.html?ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + '&lang=' + encodeURIComponent(freshLang()) + (NOTE_ID ? '&note=' + encodeURIComponent(NOTE_ID) : '');
 }
 // «Наша» вкладка: её открыла своим скриптом главная страница этого же сайта (корень). Только такую можно закрывать:
 // у вкладки из поиска (opener чужой или его нет, а история из одной записи) window.close() сработал бы и увёл бы посетителя в Google.
@@ -4650,26 +5142,41 @@ window.addEventListener('pageshow', function () { leaving = false; });
 // выбранная пара приходит сообщением и действует только на время жизни этой страницы — нигде не сохраняется.
 // =====================================================================================================================
 var pickFrame = null;
-function closePick() { if (pickFrame && pickFrame.parentNode) pickFrame.parentNode.removeChild(pickFrame); pickFrame = null; }
+var pickLoad = null; var pickLoadTimer = 0;
+/** Окно выбора пары — это главная страница в iframe; на медленной связи она грузится долго: пока не пришёл сигнал pickReady, поверх идёт «Загрузка… N с» (тап — закрыть),
+ *  а через 25 с без ответа iframe перезапрашивается один раз. */
+function hidePickLoad() { if (pickLoadTimer) { clearInterval(pickLoadTimer); pickLoadTimer = 0; } if (pickLoad && pickLoad.parentNode) pickLoad.parentNode.removeChild(pickLoad); pickLoad = null; }
+function showPickLoad() {
+  var d = document.createElement('div'); var t0 = new Date().getTime(); var again = false;
+  d.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:101;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;color:#ddd;font-size:0.95rem;cursor:pointer';
+  d.textContent = T('loading'); d.onclick = closePick; document.body.appendChild(d); pickLoad = d;
+  pickLoadTimer = setInterval(function () {
+    var s = Math.floor((new Date().getTime() - t0) / 1000); d.textContent = T('loading') + ' ' + s + ' s';
+    if (s >= 25 && !again && pickFrame) { again = true; try { pickFrame.src = pickFrame.src; } catch (e) { /* iframe недоступен */ } }
+  }, 1000);
+}
+function closePick() { hidePickLoad(); if (pickFrame && pickFrame.parentNode) pickFrame.parentNode.removeChild(pickFrame); pickFrame = null; }
 function openPicker() {
   if (pickFrame) return;
   var root = '';
   var f = document.createElement('iframe');
-  f.src = root + 'index-local.html?pick=1&ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE);
+  f.src = root + 'index-local.html?pick=1&ex=' + encodeURIComponent(EX) + '&base=' + encodeURIComponent(BASE) + '&quote=' + encodeURIComponent(QUOTE) + (NOTE_ID ? '&note=' + encodeURIComponent(NOTE_ID) : '');
   f.title = T('pickTitle'); f.setAttribute('allowtransparency', 'true');
   f.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;border:0;z-index:100;background:rgba(0,0,0,.65)';
   f.onload = function () { try { f.contentWindow.focus(); } catch (e) { /* iframe недоступен */ } };
-  document.body.appendChild(f); pickFrame = f;
+  document.body.appendChild(f); pickFrame = f; showPickLoad();
 }
 window.addEventListener('message', function (e) {
   if (!pickFrame || e.source !== pickFrame.contentWindow) return;
   if (location.origin !== 'null' && e.origin !== location.origin) return;
   var d = e.data;
   if (!d || d.exchengine !== 'pick') return;
+  if (d.type === 'pickReady') { hidePickLoad(); return; }
   closePick();
   if (d.type !== 'pairPicked') return;
   if (!EXCH_NAMES[d.ex] || !/^[A-Za-z0-9]{1,20}$/.test(d.base || '') || !/^[A-Za-z0-9]{1,20}$/.test(d.quote || '')) return;   // пара уже проверена в модалке; здесь — только защита от мусора
   var base = String(d.base).toUpperCase(); var quote = String(d.quote).toUpperCase();
+  if (/^[A-Za-z0-9_-]{1,40}$/.test(d.note || '')) { NOTE_ID = d.note; savePair(); }   // сохранили (новую или изменённую) заметку: дальше работаем с ней
   if (d.ex === EX && base === BASE && quote === QUOTE) return;
   EX = d.ex; BASE = base; QUOTE = quote; savePair();
   applyPair();

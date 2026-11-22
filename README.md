@@ -3,7 +3,7 @@
 A light, no-sign-up crypto rates monitor with charts, order books and market depth: **[www.exchengine.com](https://www.exchengine.com)**.
 This repository holds the browser front end of the service as three plain HTML files. No build step, no dependencies, no tracking.
 
-The code is light, the tools are not: a full set of indicators and drawing tools, order book and depth views, multi-exchange data. Heavy-metal analysis in featherweight code that still runs on Windows 7 and Android 7.
+The code is light, the tools are not: 104 built-in indicators and oscillators, your own indicators in a formula language, drawing tools, order book and depth views, multi-exchange data. Heavy-metal analysis in featherweight code that still runs on Windows 7 and Android 7.
 
 Блог о том, как всё началось (на русском): [Откуда есмь пошел мониторинг курсов](https://blog.exchengine.com/2026/10/exchengine-alternative-to-tabtrader-and-tradingview.html).
 
@@ -12,7 +12,7 @@ The code is light, the tools are not: a full set of indicators and drawing tools
 | File | What it is |
 |---|---|
 | `index-local.html` | Main page: notes (tiles) with live prices, watchlists, 22 interface languages |
-| `chart-local.html` | Full-screen chart of a pair: 19 chart types, indicators, drawing tools, custom formulas, any timeframe |
+| `chart-local.html` | Full-screen chart of a pair: 19 chart types, 104 built-in indicators and oscillators, drawing tools, your own indicators in a JS-like formula language, any timeframe |
 | `book-local.html` | Order book, recent trades and market depth of a pair |
 
 The files link to each other by relative names, so keep them in one folder.

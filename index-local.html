@@ -1643,7 +1643,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
      translateX(-50%), with no extra offsets). */
   .staleBlock {
     position: absolute;
-    left: 50%;
+    left: var(--midC, 50%);   /* centre of the middle band (set per tile by layoutBookZones) */
     transform: translateX(-50%);
     /* Computed: same reference as .volume's own bottom (flush with the
        price, plus the same 3px/0.1875rem shared upward nudge —
@@ -1932,7 +1932,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
      different shade (#4d9de0, lighter/less saturated), now unified. */
   .noConnIcon {
     position: absolute;
-    left: 50%;
+    left: var(--midC, 50%);
     transform: translateX(-50%);
     /* Computed: icon centre level with the vertical midpoint of the pair
        text (.pairName's own box, fixed height — see .editPencil's
@@ -1961,7 +1961,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
      rather than be clipped/stick out of the tile. */
   .noConnLabel {
     position: absolute;
-    left: 50%;
+    left: var(--midC, 50%);
     transform: translateX(-50%);
     /* Computed: same reference as .changePercent's own bottom (2.3425rem),
        shifted down by a fixed fraction of this label's own font-size
@@ -2684,12 +2684,15 @@ if (window.__pick) document.documentElement.className += ' pickMode';
   /* Pick mode (chart.html -> iframe ?pick=1): only the pair modal is shown; the note name and the tab selector are removed. */
   html.pickMode, html.pickMode body { background: transparent !important; }
   html.pickMode body > *:not(.modalOverlay):not(.helpTip):not(script):not(style) { display: none !important; }
-  html.pickMode #searchStep > #noteNameHint, html.pickMode #searchStep > .noteNameRow,
-  html.pickMode #searchStep > #pairTabHint, html.pickMode #searchStep > .pairTabHeaderRow, html.pickMode #searchStep > #pairTabBody { display: none !important; }
+  html.pickMode:not(.pickFull) #searchStep > #noteNameHint, html.pickMode:not(.pickFull) #searchStep > .noteNameRow,
+  html.pickMode:not(.pickFull) #searchStep > #pairTabHint, html.pickMode:not(.pickFull) #searchStep > .pairTabHeaderRow, html.pickMode:not(.pickFull) #searchStep > #pairTabBody { display: none !important; }
+  /* Mini window: Save (left edge of the button row) turns it into the full note window (class pickFull). Copy/Delete exist only in the full window; Delete never (the chart is bound to the note). */
+  html:not(.pickMode) #pairSearchSave, html.pickFull #pairSearchSave { display: none !important; }
+  html.pickMode:not(.pickFull) #pairSearchCopy, html.pickMode:not(.pickFull) #pairSearchDelete, html.pickMode #pairSearchDelete { display: none !important; }
   /* The tab row is hidden here, so the standard stack gap above the buttons (a 2rem button + 2 x --controlGap, as in the full modal
      between the tab row and the buttons) is given by the exchange selector itself: closed (header row) or open (list). */
-  html.pickMode #pairSearchModal .exchangeHeaderRow:not(.listOpen) { margin-bottom: calc(2rem + 2 * var(--controlGap)); }
-  html.pickMode #pairSearchModal #exchangeSelectorBody { margin-bottom: calc(2rem + 2 * var(--controlGap)); }
+  html.pickMode:not(.pickFull) #pairSearchModal .exchangeHeaderRow:not(.listOpen) { margin-bottom: calc(2rem + 2 * var(--controlGap)); }
+  html.pickMode:not(.pickFull) #pairSearchModal #exchangeSelectorBody { margin-bottom: calc(2rem + 2 * var(--controlGap)); }
   /* Price marker dialog (gear menu): chart type list + live preview on the left, two colour pickers. Same box/width as Delimiter. */
   .pmGrid { display: grid; grid-template-columns: minmax(0, 1fr) var(--delimOptW); column-gap: var(--controlGap); row-gap: var(--delimSectionGap); align-items: start; }
   .pmHead { grid-column: 1 / -1; color: #999; font-size: 0.88rem; }
@@ -4766,6 +4769,13 @@ if (window.__pick) document.documentElement.className += ' pickMode';
      (currentColor, a single colour on all OSes). flex-shrink:0, so that when
      space is short the text next to it shrinks (it has ellipsis), and not the
      icon itself. */
+  /* Rows of 2 or 3 buttons (class btnStd is set by layoutPairSearchButtons): standard width (2 icon buttons + gap), like Contacts. With 3 the first sits at the
+     left edge (the gap between it and the right pair is whatever remains); only when that gap is used up (very narrow screen) do the buttons start to shrink.
+     A row of 4 keeps the equal division (the rule above). */
+  #pairSearchButtonsRow.btnStd { justify-content: flex-end; }
+  #pairSearchButtonsRow.btnStd button { flex: 0 1 auto; width: calc(2 * var(--iconW) + 0.4rem); min-width: 0; }
+  /* Contacts: same shrinking on a very narrow screen (width stays standard while there is room). */
+  #contactsButtonsRow #contactsCancelBtn, #contactsButtonsRow #contactsSendBtn, #contactsButtonsRow #contactsCopyBtn { flex: 0 1 auto; min-width: 0; overflow: hidden; }
   .pairSearchBtnIcon {
     flex-shrink: 0;
     margin: 0;
@@ -6747,13 +6757,13 @@ if (window.__pick) document.documentElement.className += ' pickMode';
 <span class="schemaVolume">Volume</span>
 <div class="schemaStale">Delay</div>
 </div>
-<div class="schemaCaption"><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Each note is tied to a specific currency pair on a specific exchange, has a name, and may belong to any watchlist.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>The number of notes and watchlists is unlimited.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Notes are shown on tiles, watchlists — on tabs.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>You may always modify any of their parameters, copy, move, or delete them — just like files and folders.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Click or tap the left half of a tile to open a large chart with analytical tools for this currency pair (various drawing markups, Fibonacci, Elliott, indicators, oscillators, etc.).</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>The number of large charts for each tile, as well as the number of analytical tools, is unlimited. You can also create custom tools, and import and export analytics sets.</span></div><p class="schemaClosing">We aimed to make the interface as flexible and convenient as possible.</p></div>
+<div class="schemaCaption"><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Each note is tied to a specific currency pair on a specific exchange, has a name, and may belong to any watchlist.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>The number of notes and watchlists is unlimited.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Notes are shown on tiles, watchlists — on tabs.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>You may always modify any of their parameters, copy, move, or delete them — just like files and folders.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Click or tap the left half of a tile to open a large chart with analytical tools for this currency pair (various drawing markups, Fibonacci, Elliott, indicators, oscillators, etc.).</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>The number of large charts for each tile, as well as the number of analytical tools, is unlimited. You can also create custom tools, and import and export analytics sets.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>Click or tap the middle part of a tile (the slightly lighter background) to open the order book, the trade list, and the depth chart for this currency pair.</span></div><div class="welcomeLine"><span class="barrierArrow"><svg viewBox="0 0 28 16" aria-hidden="true"><path d="M1.5 5.2h11.2V2.4L26.2 8 12.7 13.6v-2.8H1.5z" fill="none" stroke="#7fd9a5" stroke-width="1.5" stroke-linejoin="round"/></svg></span><span>The order book, the trade list, and the depth chart are provided in the full volume available from the exchange in real time.</span></div><p class="schemaClosing">We aimed to make the interface as flexible and convenient as possible.</p></div>
 </section>
 <section class="infoPanel infoPanel--legal">
 <div class="infoPanelLegalHeader"><div class="infoPanelTitle">Exchange Engine That Never Stops</div></div>
-<div class="docFooter docFooterLinks"><span class="docFooterLink">About Us</span><span class="docFooterSep">|</span><span class="docFooterLink">Contacts</span><span class="docFooterSep">|</span><span class="docFooterLink">Disclaimer</span><span class="docFooterSep">|</span><span class="docFooterLink">Privacy Policy</span><span class="docFooterSep">|</span><span class="docFooterLink">Terms of Service</span></div>
+<div class="docFooter docFooterLinks"><a class="docFooterLink" href="https://www.exchengine.com/about.html">About Us</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/contacts.html">Contacts</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/disclaimer.html">Disclaimer</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/privacy.html">Privacy Policy</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/terms.html">Terms of Service</a></div>
 <div class="infoPanelLegalCopy"><img class="legalCopyLogo" loading="lazy" src="data:," width="48" height="48" alt="ExchEngine — Bitcoin price and crypto exchange rates monitor: BTC, ETH, USDT, USDC, altcoins and stablecoins">ExchEngine © 2005–2026. Released under the MIT License.</div>
-<div class="infoPanelBld">2026-11-16 05:24</div>
+<div class="infoPanelBld">2026-11-22 05:35</div>
 </section>
 </div>
 </div>
@@ -6868,6 +6878,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
         <div id="pairTabBody" class="exchangeGrid" style="display:none"></div>
 
         <div id="pairSearchButtonsRow" class="modalButtons">
+          <button type="button" id="pairSearchSave"><svg class="pairSearchBtnIcon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.41" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><path d="M8 20v-6h8v6"/></svg><span class="pairSearchBtnLabel">Save</span></button>
           <button type="button" id="pairSearchCopy"><svg class="pairSearchBtnIcon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.41" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><span class="pairSearchBtnLabel">Copy</span></button>
           <button type="button" id="pairSearchDelete"><svg class="pairSearchBtnIcon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.41" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13.5A1.5 1.5 0 0 0 8.5 22h7a1.5 1.5 0 0 0 1.5-1.5L18 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="pairSearchBtnLabel">Delete</span></button>
           <button type="button" id="pairSearchCancel" class="confirmCancelBtn"><svg class="pairSearchBtnIcon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.41" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg><span class="pairSearchBtnLabel">Cancel</span></button>
@@ -7127,7 +7138,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
           </span>
         </div>
         </div><!-- /.contactsAddressesList -->
-        <span id="contactsWriterCroc" class="contactsWriterCroc"><img class="contactsWriterCrocImg" src="data:image/png;base64,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" alt="" width="909" height="768"><img class="contactsWriterCrocImg contactsWriterCrocFile" src="data:," alt="ExchEngine Crocodile, Senior Crocodilian, literaced and smart writes a letter, message, novel." width="909" height="768" onload="this.className+=' ready'"></span>
+        <span id="contactsWriterCroc" class="contactsWriterCroc"><img class="contactsWriterCrocImg" src="data:image/png;base64,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" alt="" width="909" height="768"><img class="contactsWriterCrocImg contactsWriterCrocFile" src="data:," alt="ExchEngine Crocodile, Senior Crocodilian, literate and smart writes a letter, message, novel." width="909" height="768" onload="this.className+=' ready'"></span>
         </div><!-- /#contactsAddresses -->
         <div class="barrierPlain" id="contactsIntroLine2"></div>
       </div>
@@ -7809,6 +7820,7 @@ const I18N = {
     schemaLine4: 'Им всегда можно изменять любые параметры, копировать, перемещать, удалять — подобно файлам и папкам.',
     schemaLine5: '{клик} по левой половине плитки, чтобы открыть для этой валютной пары большой график с аналитическими инструментами (различные виды разметки, Фибоначчи, Эллиотт, индикаторы, осцилляторы и пр.).',
     schemaLine6: 'Мы не ограничиваем количество больших графиков для каждой плитки, как и количество различных аналитических инструментов на любом из них. Также Вы можете неограниченно создавать пользовательские инструменты, импортировать и экспортировать наборы аналитики.',
+    schemaLineMid: '{клик} по средней части плитки (более светлый фон), чтобы открыть для этой валютной пары книгу ордеров, сделок, диаграмму глубины.',
     schemaLine7: 'Книга ордеров, сделок, диаграмма глубины предоставлены в полном объеме, который возможно получить от биржи в реальном времени.',
     pmType: 'Тип',
     pmColour: 'Цвет',
@@ -8076,6 +8088,7 @@ const I18N = {
     schemaLine4: 'You may always modify any of their parameters, copy, move, or delete them \u2014 just like files and folders.',
     schemaLine5: '{click} the left half of a tile to open a large chart with analytical tools for this currency pair (various drawing markups, Fibonacci, Elliott, indicators, oscillators, etc.).',
     schemaLine6: 'We do not limit the number of large charts for each tile, nor the number of analytical tools on any of them. You can also create an unlimited number of custom tools, and import and export analytics sets.',
+    schemaLineMid: '{click} the middle part of a tile (the slightly lighter background) to open the order book, the trade list, and the depth chart for this currency pair.',
     schemaLine7: 'The order book, the trade list, and the depth chart are provided in the full volume available from the exchange in real time.',
     pmType: 'Type',
     pmColour: 'Colour',
@@ -8200,6 +8213,7 @@ const I18N = {
     schemaLine4: '您可以随时修改它们的任何参数，也可以复制、移动或删除——就像文件和文件夹一样。',
     schemaLine5: '{click}卡片左半部分，即可为该币对打开带分析工具的大图表（各种标记绘图、斐波那契、艾略特、指标、振荡器等）。',
     schemaLine6: '我们不限制每张卡片可打开的大图表数量，也不限制其上分析工具的数量。您还可以无限创建自定义工具，并导入、导出分析方案。',
+    schemaLineMid: '{click}卡片中间部分（背景稍浅），可打开该币对的订单簿、成交记录和深度图。',
     schemaLine7: '订单簿、成交记录和深度图将提供交易所实时所能提供的全部数据。',
     schemaClosing: '我们力求让界面尽可能灵活、方便。',
     // sloganTop (translation, parked by request): '对的地点，对的时间，对的金额',
@@ -8441,6 +8455,7 @@ const I18N = {
     schemaLine4: 'Siempre puede modificar cualquiera de sus parámetros, copiarlas, moverlas o eliminarlas, igual que archivos y carpetas.',
     schemaLine5: '{click} en la mitad izquierda de una ficha para abrir, para este par de divisas, un gráfico grande con herramientas analíticas (distintos tipos de marcado, Fibonacci, Elliott, indicadores, osciladores, etc.).',
     schemaLine6: 'No limitamos el número de gráficos grandes de cada ficha ni el de herramientas analíticas en cada uno de ellos. Además, puede crear sin límite herramientas personalizadas e importar y exportar conjuntos de análisis.',
+    schemaLineMid: '{click} en la parte central de la tarjeta (fondo ligeramente más claro) para abrir el libro de órdenes, la lista de operaciones y el diagrama de profundidad de este par de divisas.',
     schemaLine7: 'El libro de órdenes, las operaciones y el diagrama de profundidad se ofrecen en todo el volumen que la bolsa puede proporcionar en tiempo real.',
     schemaClosing: 'Hemos procurado que la interfaz sea lo más flexible y cómoda posible.',
     // sloganTop (translation, parked by request): 'El lugar adecuado, el momento adecuado, la cantidad adecuada',
@@ -8682,6 +8697,7 @@ const I18N = {
     schemaLine4: 'Vous pouvez toujours modifier leurs paramètres, les copier, les déplacer ou les supprimer — comme des fichiers et des dossiers.',
     schemaLine5: '{click} sur la moitié gauche d’une tuile pour ouvrir, pour cette paire de devises, un grand graphique avec des outils d’analyse (différents types de tracés, Fibonacci, Elliott, indicateurs, oscillateurs, etc.).',
     schemaLine6: 'Nous ne limitons ni le nombre de grands graphiques par tuile, ni le nombre d’outils d’analyse sur chacun d’eux. Vous pouvez aussi créer sans limite vos propres outils, importer et exporter des jeux d’analyses.',
+    schemaLineMid: '{click} sur la partie centrale de la tuile (fond légèrement plus clair) pour ouvrir, pour cette paire de devises, le carnet d’ordres, la liste des transactions et le graphique de profondeur.',
     schemaLine7: 'Le carnet d’ordres, la liste des transactions et le graphique de profondeur sont fournis dans toute l’ampleur que la plateforme d’échange peut offrir en temps réel.',
     schemaClosing: 'Nous avons voulu une interface aussi souple et pratique que possible.',
     // sloganTop (translation, parked by request): 'Le bon endroit, le bon moment, le bon montant',
@@ -8924,6 +8940,7 @@ const I18N = {
     schemaLine4: 'Sie können jederzeit alle Parameter ändern, die Notizen kopieren, verschieben oder löschen – wie Dateien und Ordner.',
     schemaLine5: '{click} auf die linke Hälfte einer Kachel, um für dieses Währungspaar ein großes Diagramm mit Analysewerkzeugen zu öffnen (verschiedene Markierungen, Fibonacci, Elliott, Indikatoren, Oszillatoren usw.).',
     schemaLine6: 'Wir begrenzen weder die Anzahl großer Diagramme pro Kachel noch die Anzahl der Analysewerkzeuge in jedem davon. Außerdem können Sie unbegrenzt eigene Werkzeuge erstellen sowie Analysesätze importieren und exportieren.',
+    schemaLineMid: '{click} auf den mittleren Teil der Kachel (etwas hellerer Hintergrund), um für dieses Währungspaar das Orderbuch, die Handelsliste und das Markttiefendiagramm zu öffnen.',
     schemaLine7: 'Orderbuch, Handelsliste und Markttiefendiagramm werden in vollem Umfang bereitgestellt, den die Börse in Echtzeit liefern kann.',
     schemaClosing: 'Wir wollten die Oberfläche so flexibel und bequem wie möglich gestalten.',
     // sloganTop (translation, parked by request): 'Der richtige Ort, die richtige Zeit, der richtige Betrag',
@@ -9168,6 +9185,7 @@ const I18N = {
     schemaLine4: 'Μπορείτε πάντα να αλλάξετε οποιαδήποτε παράμετρό τους, να τις αντιγράψετε, να τις μετακινήσετε ή να τις διαγράψετε — όπως αρχεία και φακέλους.',
     schemaLine5: '{click} στο αριστερό μισό ενός πλακιδίου για να ανοίξετε ένα μεγάλο γράφημα με εργαλεία ανάλυσης για αυτό το ζεύγος νομισμάτων (διάφορα είδη σχεδίασης, Fibonacci, Elliott, δείκτες, ταλαντωτές κ.ά.).',
     schemaLine6: 'Δεν περιορίζουμε τον αριθμό των μεγάλων γραφημάτων για κάθε πλακίδιο ούτε τον αριθμό των εργαλείων ανάλυσης σε καθένα από αυτά. Μπορείτε επίσης να δημιουργείτε απεριόριστα προσαρμοσμένα εργαλεία και να εισάγετε και να εξάγετε σετ αναλύσεων.',
+    schemaLineMid: '{click} στο μεσαίο τμήμα του πλακιδίου (ελαφρώς πιο ανοιχτό φόντο) για να ανοίξετε το βιβλίο εντολών, τη λίστα συναλλαγών και το διάγραμμα βάθους για αυτό το ζεύγος νομισμάτων.',
     schemaLine7: 'Το βιβλίο εντολών, οι συναλλαγές και το διάγραμμα βάθους παρέχονται στον πλήρη όγκο που μπορεί να δώσει το χρηματιστήριο σε πραγματικό χρόνο.',
     schemaClosing: 'Προσπαθήσαμε να κάνουμε τη διεπαφή όσο το δυνατόν πιο ευέλικτη και βολική.',
     // sloganTop (translation, parked by request): 'Σωστό μέρος, σωστή στιγμή, σωστό ποσό',
@@ -9409,6 +9427,7 @@ const I18N = {
     schemaLine4: 'Anda selalu dapat mengubah parameter apa pun, menyalin, memindahkan, atau menghapusnya — seperti file dan folder.',
     schemaLine5: '{click} separuh kiri ubin untuk membuka grafik besar dengan alat analisis untuk pasangan mata uang ini (berbagai jenis penandaan, Fibonacci, Elliott, indikator, osilator, dll.).',
     schemaLine6: 'Kami tidak membatasi jumlah grafik besar untuk setiap ubin, maupun jumlah alat analisis pada masing-masing grafik. Anda juga dapat membuat alat kustom tanpa batas, serta mengimpor dan mengekspor set analisis.',
+    schemaLineMid: '{click} bagian tengah ubin (latar sedikit lebih terang) untuk membuka buku order, daftar transaksi, dan diagram kedalaman untuk pasangan mata uang ini.',
     schemaLine7: 'Buku order, daftar transaksi, dan diagram kedalaman disajikan selengkap yang dapat diberikan bursa secara real time.',
     schemaClosing: 'Kami berusaha membuat antarmuka seluwes dan senyaman mungkin.',
     // sloganTop (translation, parked by request): 'Tempat yang Tepat, Waktu yang Tepat, Jumlah yang Tepat',
@@ -9650,6 +9669,7 @@ const I18N = {
     schemaLine4: 'Puoi sempre modificarne qualsiasi parametro, copiarle, spostarle o eliminarle — proprio come file e cartelle.',
     schemaLine5: '{click} sulla metà sinistra di un riquadro per aprire un grande grafico con strumenti analitici per questa coppia di valute (vari tipi di tracciati, Fibonacci, Elliott, indicatori, oscillatori, ecc.).',
     schemaLine6: 'Non limitiamo il numero di grafici grandi per ogni riquadro, né il numero di strumenti analitici su ciascuno di essi. Puoi inoltre creare strumenti personalizzati senza limiti, importare ed esportare set di analisi.',
+    schemaLineMid: '{click} sulla parte centrale del riquadro (sfondo leggermente più chiaro) per aprire il book degli ordini, l’elenco delle operazioni e il grafico di profondità per questa coppia di valute.',
     schemaLine7: 'Il book degli ordini, l’elenco delle operazioni e il grafico di profondità sono forniti nella massima completezza che l’exchange può offrire in tempo reale.',
     schemaClosing: 'Abbiamo cercato di rendere l’interfaccia flessibile e comoda al massimo.',
     // sloganTop (translation, parked by request): 'Il posto giusto, il momento giusto, l’importo giusto',
@@ -9891,6 +9911,7 @@ const I18N = {
     schemaLine4: 'パラメータはいつでも変更でき、コピー・移動・削除も可能です――ファイルやフォルダのように。',
     schemaLine5: 'タイルの左半分を{click}すると、この通貨ペアの分析ツール付き大型チャートが開きます（各種マーキング、フィボナッチ、エリオット、インジケーター、オシレーターなど）。',
     schemaLine6: 'タイルごとの大型チャートの数も、それぞれのチャートで使える分析ツールの数も制限しません。独自のツールを無制限に作成したり、分析セットをインポート／エクスポートしたりすることもできます。',
+    schemaLineMid: 'タイルの中央部分（背景がやや明るい部分）を{click}すると、この通貨ペアの板情報、約定一覧、板の厚みを示す深度チャートが開きます。',
     schemaLine7: '板情報、約定一覧、深度チャートは、取引所からリアルタイムで取得できる範囲の全量で提供されます。',
     schemaClosing: 'インターフェースをできるだけ柔軟で使いやすくすることを目指しました。',
     // sloganTop (translation, parked by request): '適切な場所で、適切なタイミングで、適切な金額を',
@@ -10133,6 +10154,7 @@ const I18N = {
     schemaLine4: '언제든 모든 매개변수를 바꾸고 복사, 이동, 삭제할 수 있습니다. 파일과 폴더처럼요.',
     schemaLine5: '타일의 왼쪽 절반을 {click}하면 이 통화쌍의 분석 도구가 포함된 대형 차트가 열립니다(다양한 마킹, 피보나치, 엘리엇, 지표, 오실레이터 등).',
     schemaLine6: '타일마다 열 수 있는 대형 차트 수도, 각 차트의 분석 도구 수도 제한하지 않습니다. 사용자 정의 도구를 무제한으로 만들고 분석 세트를 가져오거나 내보낼 수도 있습니다.',
+    schemaLineMid: '타일의 가운데 부분(배경이 약간 더 밝은 영역)을 {click}하면 이 통화쌍의 호가창, 체결 목록, 심도 차트가 열립니다.',
     schemaLine7: '호가창, 체결 목록, 심도 차트는 거래소가 실시간으로 제공할 수 있는 전체 범위로 제공됩니다.',
     schemaClosing: '인터페이스를 최대한 유연하고 편리하게 만들고자 했습니다.',
     // sloganTop (translation, parked by request): '알맞은 장소, 알맞은 시간, 알맞은 금액',
@@ -10375,6 +10397,7 @@ const I18N = {
     schemaLine4: 'Тэдгээрийн аль ч параметрийг хэзээ ч өөрчилж, хуулж, зөөж, устгаж болно — файл, хавтас шиг.',
     schemaLine5: 'Энэ валютын хослолын шинжилгээний хэрэгсэлтэй том график нээхийн тулд хавтангийн зүүн талын хагас дээр: {click} (янз бүрийн тэмдэглэгээ, Фибоначчи, Эллиотт, үзүүлэлт, осциллятор гэх мэт).',
     schemaLine6: 'Хавтан бүрийн том графикийн тоо, мөн тэдгээр дээрх шинжилгээний хэрэгслийн тоог бид хязгаарлахгүй. Мөн өөрийн хэрэгслийг хязгааргүй үүсгэж, шинжилгээний багц импортлох, экспортлох боломжтой.',
+    schemaLineMid: 'Энэ валютын хослолын захиалгын ном, гүйлгээний жагсаалт, зах зээлийн гүний диаграммыг нээхийн тулд хавтангийн дунд хэсэг (арай цайвар дэвсгэр) дээр: {click}.',
     schemaLine7: 'Захиалгын ном, гүйлгээний жагсаалт, гүний диаграммыг бирж бодит цаг хугацаанд өгөх боломжтой бүх хэмжээгээр нь танилцуулна.',
     schemaClosing: 'Бид интерфейсийг аль болох уян хатан, тохиромжтой болгохыг хичээлээ.',
     // sloganTop (translation, parked by request): 'Зөв газар, зөв цаг, зөв дүн',
@@ -10617,6 +10640,7 @@ const I18N = {
     schemaLine4: 'Você pode sempre alterar qualquer parâmetro, copiar, mover ou excluir — como arquivos e pastas.',
     schemaLine5: '{click} na metade esquerda de um cartão para abrir um gráfico grande com ferramentas analíticas para este par de moedas (vários tipos de marcação, Fibonacci, Elliott, indicadores, osciladores etc.).',
     schemaLine6: 'Não limitamos o número de gráficos grandes de cada cartão nem o de ferramentas analíticas em cada um deles. Você também pode criar ferramentas próprias sem limite e importar e exportar conjuntos de análise.',
+    schemaLineMid: '{click} na parte central do bloco (fundo um pouco mais claro) para abrir o livro de ofertas, a lista de negociações e o diagrama de profundidade deste par de moedas.',
     schemaLine7: 'O livro de ofertas, a lista de negociações e o diagrama de profundidade são oferecidos em todo o volume que a bolsa pode fornecer em tempo real.',
     schemaClosing: 'Procuramos deixar a interface o mais flexível e prática possível.',
     // sloganTop (translation, parked by request): 'O lugar certo, a hora certa, o valor certo',
@@ -10858,6 +10882,7 @@ const I18N = {
     schemaLine4: 'Parametrelerini istediğiniz zaman değiştirebilir, kopyalayabilir, taşıyabilir veya silebilirsiniz — tıpkı dosyalar ve klasörler gibi.',
     schemaLine5: 'Bu döviz çifti için analiz araçlarıyla büyük bir grafik açmak için karonun sol yarısına {click} (çeşitli işaretleme türleri, Fibonacci, Elliott, göstergeler, osilatörler vb.).',
     schemaLine6: 'Her karo için büyük grafik sayısını da, her birindeki analiz aracı sayısını da sınırlamıyoruz. Ayrıca sınırsız sayıda özel araç oluşturabilir, analiz setlerini içe ve dışa aktarabilirsiniz.',
+    schemaLineMid: 'Bu döviz çifti için emir defterini, işlem listesini ve derinlik grafiğini açmak için kutucuğun orta kısmına (biraz daha açık arka plan) {click}.',
     schemaLine7: 'Emir defteri, işlem listesi ve derinlik grafiği, borsanın gerçek zamanlı olarak sağlayabildiği tüm hacimde sunulur.',
     schemaClosing: 'Arayüzü olabildiğince esnek ve kullanışlı yapmaya çalıştık.',
     // sloganTop (translation, parked by request): 'Doğru Yer, Doğru Zaman, Doğru Miktar',
@@ -11100,6 +11125,7 @@ const I18N = {
     schemaLine4: 'Їм завжди можна змінювати будь-які параметри, копіювати, переміщати, видаляти — подібно до файлів і папок.',
     schemaLine5: '{click} по лівій половині плитки, щоб відкрити для цієї валютної пари великий графік з аналітичними інструментами (різні види розмітки, Фібоначчі, Еліотт, індикатори, осцилятори тощо).',
     schemaLine6: 'Ми не обмежуємо кількість великих графіків для кожної плитки, як і кількість різних аналітичних інструментів на будь-якому з них. Також Ви можете необмежено створювати користувацькі інструменти, імпортувати й експортувати набори аналітики.',
+    schemaLineMid: '{click} по середній частині плитки (дещо світліший фон), щоб відкрити для цієї валютної пари книгу ордерів, угод, діаграму глибини.',
     schemaLine7: 'Книга ордерів, угод, діаграма глибини надаються в повному обсязі, який можливо отримати від біржі в реальному часі.',
     schemaClosing: 'Ми намагалися надати інтерфейсу максимальну гнучкість і зручність.',
     // sloganTop (translation, parked by request): 'Правильне місце, правильний час, правильна сума',
@@ -11341,6 +11367,7 @@ const I18N = {
     schemaLine4: 'Bạn luôn có thể thay đổi mọi tham số, sao chép, di chuyển hoặc xóa — giống như tệp và thư mục.',
     schemaLine5: '{click} vào nửa bên trái của ô để mở biểu đồ lớn có công cụ phân tích cho cặp tiền này (nhiều kiểu đánh dấu, Fibonacci, Elliott, chỉ báo, bộ dao động, v.v.).',
     schemaLine6: 'Chúng tôi không giới hạn số lượng biểu đồ lớn cho mỗi ô, cũng như số lượng công cụ phân tích trên từng biểu đồ. Bạn cũng có thể tạo không giới hạn công cụ tùy chỉnh, nhập và xuất bộ phân tích.',
+    schemaLineMid: '{click} vào phần giữa của ô (nền sáng hơn một chút) để mở sổ lệnh, danh sách giao dịch và biểu đồ độ sâu của cặp tiền này.',
     schemaLine7: 'Sổ lệnh, danh sách giao dịch và biểu đồ độ sâu được cung cấp đầy đủ ở mức tối đa mà sàn có thể trả về theo thời gian thực.',
     schemaClosing: 'Chúng tôi đã cố gắng làm giao diện linh hoạt và tiện lợi nhất có thể.',
     // sloganTop (translation, parked by request): 'Đúng nơi, đúng lúc, đúng số tiền',
@@ -11584,6 +11611,7 @@ const I18N = {
     schemaLine4: 'Voit aina muokata mitä tahansa niiden asetuksia, kopioida, siirtää tai poistaa ne — kuten tiedostoja ja kansioita.',
     schemaLine5: 'Avaa tämän valuuttaparin iso kaavio analyysityökaluineen: {click} ruudun vasenta puoliskoa (erilaiset merkinnät, Fibonacci, Elliott, indikaattorit, oskillaattorit jne.).',
     schemaLine6: 'Emme rajoita suurten kaavioiden määrää kutakin ruutua kohti emmekä analyysityökalujen määrää missään niistä. Voit myös luoda rajattomasti omia työkaluja sekä tuoda ja viedä analyysisarjoja.',
+    schemaLineMid: 'Avaa tämän valuuttaparin tilauskirja, kauppaluettelo ja markkinasyvyyskaavio: {click} ruudun keskiosaa (hieman vaaleampi tausta).',
     schemaLine7: 'Tilauskirja, kauppaluettelo ja markkinasyvyyskaavio tarjotaan täysimääräisinä siltä osin kuin pörssi pystyy toimittamaan ne reaaliajassa.',
     schemaClosing: 'Pyrimme tekemään käyttöliittymästä mahdollisimman joustavan ja kätevän.',
     // sloganTop (translation, parked by request): 'Oikea paikka, oikea aika, oikea summa',
@@ -11825,6 +11853,7 @@ const I18N = {
     schemaLine4: 'Jūs vienmēr varat mainīt jebkuru to parametru, kopēt, pārvietot vai dzēst — gluži kā failus un mapes.',
     schemaLine5: '{click} uz flīzes kreisās puses, lai atvērtu šim valūtu pārim lielu grafiku ar analīzes rīkiem (dažādi atzīmēšanas veidi, Fibonači, Eliots, indikatori, oscilatori u. c.).',
     schemaLine6: 'Mēs neierobežojam lielo grafiku skaitu katrai flīzei, kā arī analīzes rīku skaitu katrā no tiem. Varat arī neierobežoti izveidot savus rīkus, importēt un eksportēt analīzes komplektus.',
+    schemaLineMid: '{click} uz flīzes vidējās daļas (nedaudz gaišāks fons), lai atvērtu šī valūtu pāra pasūtījumu grāmatu, darījumu sarakstu un tirgus dziļuma diagrammu.',
     schemaLine7: 'Pasūtījumu grāmata, darījumu saraksts un tirgus dziļuma diagramma tiek sniegti pilnā apjomā, ko birža spēj nodrošināt reāllaikā.',
     schemaClosing: 'Mēs centāmies padarīt saskarni pēc iespējas elastīgāku un ērtāku.',
     // sloganTop (translation, parked by request): 'Īstā vieta, īstais laiks, īstā summa',
@@ -12067,6 +12096,7 @@ const I18N = {
     schemaLine4: 'Zawsze możesz zmienić ich dowolne parametry, skopiować, przenieść lub usunąć — jak pliki i foldery.',
     schemaLine5: '{click} lewą połowę kafelka, aby otworzyć dla tej pary walutowej duży wykres z narzędziami analitycznymi (różne rodzaje oznaczeń, Fibonacci, Elliott, wskaźniki, oscylatory itp.).',
     schemaLine6: 'Nie ograniczamy liczby dużych wykresów dla każdego kafelka ani liczby narzędzi analitycznych na każdym z nich. Możesz też tworzyć bez limitu własne narzędzia oraz importować i eksportować zestawy analiz.',
+    schemaLineMid: '{click} środkową część kafelka (nieco jaśniejsze tło), aby otworzyć dla tej pary walutowej arkusz zleceń, listę transakcji i wykres głębokości rynku.',
     schemaLine7: 'Arkusz zleceń, lista transakcji i wykres głębokości rynku są udostępniane w pełnym zakresie, jaki giełda może dostarczyć w czasie rzeczywistym.',
     schemaClosing: 'Staraliśmy się, by interfejs był jak najbardziej elastyczny i wygodny.',
     // sloganTop (translation, parked by request): 'Właściwe miejsce, właściwy czas, właściwa kwota',
@@ -12308,6 +12338,7 @@ const I18N = {
     schemaLine4: 'Unaweza kila wakati kubadilisha vigezo vyake vyovyote, kunakili, kuhamisha au kufuta — kama faili na folda.',
     schemaLine5: '{click} nusu ya kushoto ya kigae ili kufungua chati kubwa yenye zana za uchambuzi kwa jozi hii ya sarafu (aina mbalimbali za alama, Fibonacci, Elliott, viashiria, oscillator n.k.).',
     schemaLine6: 'Hatuweki kikomo kwa idadi ya chati kubwa za kila kigae, wala idadi ya zana za uchambuzi kwenye kila moja. Unaweza pia kuunda zana zako bila kikomo, na kuingiza na kuhamisha seti za uchambuzi.',
+    schemaLineMid: '{click} sehemu ya kati ya kigae (mandharinyuma nyepesi kidogo) ili kufungua kitabu cha oda, orodha ya biashara na mchoro wa kina cha soko kwa jozi hii ya sarafu.',
     schemaLine7: 'Kitabu cha oda, orodha ya biashara na mchoro wa kina cha soko hutolewa kwa ukamilifu wote ambao soko linaweza kutoa kwa wakati halisi.',
     schemaClosing: 'Tulijitahidi kuifanya kiolesura kiwe rahisi kubadilika na rahisi kutumia iwezekanavyo.',
     // sloganTop (translation, parked by request): 'Mahali Sahihi, Wakati Sahihi, Kiasi Sahihi',
@@ -12550,6 +12581,7 @@ const I18N = {
     schemaLine4: 'คุณแก้ไขพารามิเตอร์ใดๆ คัดลอก ย้าย หรือลบได้เสมอ — เหมือนไฟล์และโฟลเดอร์',
     schemaLine5: '{click}ที่ครึ่งซ้ายของการ์ดเพื่อเปิดกราฟขนาดใหญ่พร้อมเครื่องมือวิเคราะห์สำหรับคู่สกุลเงินนี้ (การวาดเครื่องหมายหลายแบบ, ฟีโบนัชชี, เอลเลียต, อินดิเคเตอร์, ออสซิลเลเตอร์ ฯลฯ)',
     schemaLine6: 'เราไม่จำกัดจำนวนกราฟขนาดใหญ่ของแต่ละการ์ด และไม่จำกัดจำนวนเครื่องมือวิเคราะห์บนกราฟแต่ละอัน นอกจากนี้คุณยังสร้างเครื่องมือของตัวเองได้ไม่จำกัด และนำเข้า–ส่งออกชุดการวิเคราะห์',
+    schemaLineMid: '{click}ที่ส่วนกลางของการ์ด (พื้นหลังสว่างขึ้นเล็กน้อย) เพื่อเปิดสมุดคำสั่ง รายการซื้อขาย และแผนภาพความลึกของตลาดสำหรับคู่สกุลเงินนี้',
     schemaLine7: 'สมุดคำสั่ง รายการซื้อขาย และแผนภาพความลึกจะแสดงครบถ้วนตามปริมาณสูงสุดที่ตลาดซื้อขายสามารถให้ได้แบบเรียลไทม์',
     schemaClosing: 'เราตั้งใจทำให้อินเทอร์เฟซยืดหยุ่นและใช้งานสะดวกที่สุด',
     // sloganTop (translation, parked by request): 'ถูกที่ ถูกเวลา ถูกจำนวน',
@@ -12791,6 +12823,7 @@ const I18N = {
     schemaLine4: 'Kullum za ka iya canza duk wani sigar su, kwafa, mayar, ko goge — kamar fayiloli da manyan fayiloli.',
     schemaLine5: '{click} a rabin hagu na tayal don buɗe babban zane mai kayan aikin bincike don wannan nau’in kuɗi (nau’o’in alamomi daban-daban, Fibonacci, Elliott, alamomin nuni, oscillators da sauransu).',
     schemaLine6: 'Ba mu iyakance adadin manyan zane-zane na kowane tayal ba, ko adadin kayan aikin bincike a kowanne daga cikinsu. Hakanan za ka iya ƙirƙirar kayan aikinka marasa iyaka, da shigo da fitar da tarin bincike.',
+    schemaLineMid: '{click} a bangaren tsakiya na tayal ɗin (bangon da ya fi haske kaɗan) don buɗe littafin oda, jerin cinikai da zanen zurfin kasuwa na wannan nau’in kuɗi.',
     schemaLine7: 'Ana samar da littafin oda, jerin cinikai da zanen zurfin kasuwa gaba ɗaya yadda musayar kuɗi za ta iya bayarwa a ainihin lokaci.',
     schemaClosing: 'Mun yi ƙoƙarin sa mahallin ya zama mai sassauƙa da sauƙi sosai.',
     // sloganTop (translation, parked by request): 'Wuri Mai Kyau, Lokaci Mai Kyau, Adadi Mai Kyau',
@@ -15129,7 +15162,7 @@ function openChartNow(item) {
     '&quote=' + encodeURIComponent(item.quote) + '&lang=' + encodeURIComponent(currentLang);
   // The pair goes to the chart page through localStorage (one clean address, one cached copy of the page for every pair); if the storage
   // is not available, the pair travels in the address as before.
-  const url = 'chart-local.html?' + q;
+  const url = 'chart-local.html?' + q + '&note=' + encodeURIComponent(item.id);
   let w = null;
   try { w = window.open(url, '_blank'); } catch (_) { w = null; }
   // The browser may refuse a pop-up (e.g. right after its site data was cleared, or when the call is no longer inside the tap):
@@ -15147,7 +15180,7 @@ function openBookForItem(item) {
 }
 function openBookNow(item) {
   const url = 'book-local.html?ex=' + encodeURIComponent(item.exchange) + '&base=' + encodeURIComponent(item.base) +
-    '&quote=' + encodeURIComponent(item.quote) + '&lang=' + encodeURIComponent(currentLang);
+    '&quote=' + encodeURIComponent(item.quote) + '&lang=' + encodeURIComponent(currentLang) + '&note=' + encodeURIComponent(item.id);
   let w = null;
   try { w = window.open(url, '_blank'); } catch (_) { w = null; }
   if (!w) location.href = url;
@@ -17721,6 +17754,13 @@ function layoutBookZones() {
     data.push([row, rr]);
   });
   bookZoneM = M;
+  // The band runs from the midpoint (widest left block | delay block) to the midpoint (delay block | mini chart); the content (smiley, status,
+  // timer) sits exactly in its middle when the delay block is centred between the left blocks and the chart: c = (M + chart left) / 2.
+  data.forEach(([row, rr]) => {
+    const sp0 = row.querySelector('.sparklineBlock');
+    if (sp0) { const sl = sp0.getBoundingClientRect().left - rr.left; if (sl > M) { row.style.setProperty('--midC', ((M + sl) / 2) + 'px'); return; } }
+    row.style.removeProperty('--midC');
+  });
   data.forEach(([row, rr]) => {
     const tb = row.querySelector('.staleBlock');
     if (tb) { const w = tb.getBoundingClientRect().width; if (w > 0) bookZoneTW = w; }
@@ -17765,8 +17805,8 @@ function positionSchemaBand(tile) {
     });
   }
   const tw = bookZoneTW || 56;
-  const cx = tr.width / 2;
   const cl = chart.getBoundingClientRect().left - tr.left;
+  const cx = (M + cl) / 2;
   const L = (M + (cx - tw / 2)) / 2, R = ((cx + tw / 2) + cl) / 2;
   if (!(R - L > 20)) { band.classList.remove('on'); return; }
   band.style.left = L + 'px';
@@ -18569,6 +18609,27 @@ const SITE_DOCS = {
   terms:      { label: 'Terms of Service', show: () => showTermsOfService() }
 };
 const SITE_DOC_ORDER = ['about', 'contacts', 'disclaimer', 'privacy', 'terms'];
+// Every document also has its own page (generated on the server from the texts of this file, see seo-machine.js docs). The footer links point to
+// them as real hrefs: a plain click is intercepted below (preventDefault) and opens the document in the app exactly as before, while crawlers,
+// middle-click and "open in a new tab" get the page.
+const SITE_DOC_URL = { about: '/about.html', contacts: '/contacts.html', disclaimer: '/disclaimer.html', privacy: '/privacy.html', terms: '/terms.html' };
+// About and Contacts exist on the server in every language of the app (/ru/about.html …); the other three documents are English only.
+// The link follows the language chosen in the app. Links built before a language change (or static ones) are corrected the moment
+// they are touched (hover, press, long press, context menu), so "open in a new tab" always gets the page in the current language.
+const SITE_DOC_LOC = { about: 1, contacts: 1 };
+function siteDocUrl(id) {
+  const u = SITE_DOC_URL[id];
+  return 'https://www.exchengine.com' + (SITE_DOC_LOC[id] && currentLang !== 'en' && SUPPORTED_LANGS.indexOf(currentLang) >= 0 ? '/' + currentLang + u : u);
+}
+function fixDocLinkHref(e) {
+  const a = e.target && e.target.closest ? e.target.closest('a.docFooterLink') : null;
+  if (!a) return;
+  const m = /\/([a-z]+)\.html(?:\?.*)?$/.exec(a.getAttribute('href') || '');
+  // ?from=home: the page opened from here (new tab, tab group) closes itself on "back" like chart.html / book.html do; works whatever the referrer policy.
+  // Added only when the link is touched, so crawlers see clean addresses.
+  if (m && SITE_DOC_URL[m[1]]) a.setAttribute('href', siteDocUrl(m[1]) + '?from=home');
+}
+['pointerdown', 'touchstart', 'mouseover', 'contextmenu', 'focusin'].forEach((n) => document.addEventListener(n, fixDocLinkHref, true));
 
 // Always "all 5 documents minus whichever is currently open" (currentId),
 // in alphabetical order — never hardcoded per document. targetEl defaults
@@ -18578,7 +18639,7 @@ function renderDocFooterLinks(currentId, targetEl) {
   const footerLinksEl = targetEl || document.getElementById('nameModalFooterLinks');
   footerLinksEl.innerHTML = SITE_DOC_ORDER
     .filter(id => id !== currentId)
-    .map(id => `<a href="#" class="docFooterLink" data-footer-link="${id}">${SITE_DOCS[id].label}</a>`)
+    .map(id => `<a href="${siteDocUrl(id)}" class="docFooterLink" data-footer-link="${id}">${SITE_DOCS[id].label}</a>`)
     .join('<span class="docFooterSep">|</span>');
 }
 // Delegated: footerLinksEl's own content is replaced on every render above,
@@ -20680,7 +20741,7 @@ let tickerRttMs = 0;                              // smoothed duration of succes
 
 // Timeout = what a healthy reply needs (measured) with a margin; a request that does not answer in that time is on a dead connection.
 function tickerTimeoutMs() {
-  if (!tickerRttMs) return TICKER_TIMEOUT_FIRST_MS;
+  if (!tickerRttMs) return Math.min(12000, TICKER_TIMEOUT_FIRST_MS * (1 + consecutivePriceFailures) + (window.__chunkedPage ? 4000 : 0));   // nothing has answered yet: each failed cycle waits longer (slow link), a page that arrived in parts starts patient
   return Math.min(TICKER_TIMEOUT_MAX_MS, Math.max(TICKER_TIMEOUT_MIN_MS, Math.round(tickerRttMs * 3 + 1000)));
 }
 function noteTickerRtt(ms) {
@@ -20852,9 +20913,17 @@ async function refreshPrices() {
 // nothing and the cycle in flight schedules the next one itself. Without this a wake-up during an in-flight cycle started a
 // second chain and the loop forked for good (two timers, then more with every return to the tab).
 let priceCycleBusy = false;
+// Background tab: no polling (nobody sees the result, and the browser throttles timers anyway); one light refresh per BG_PRICE_MS keeps
+// the data from going completely cold. The moment the tab is shown again wakeRefreshLoopsIfNeeded() fetches fresh data at once.
+const BG_PRICE_MS = 120000;
+const BG_HISTORY_MS = 900000;
+let lastPriceCycleTs = Date.now();
+let lastHistoryCycleTs = 0;
 async function runPriceCycle() {
   if (priceCycleBusy) return;
+  if (document.hidden && Date.now() - lastPriceCycleTs < BG_PRICE_MS) { scheduleNextRefresh(); return; }
   priceCycleBusy = true;
+  lastPriceCycleTs = Date.now();
   try { await refreshPrices(); } catch (e) { /* refreshPrices handles its own errors; the loop must go on */ } finally { priceCycleBusy = false; }
   scheduleNextRefresh();
 }
@@ -20870,7 +20939,9 @@ function scheduleNextRefresh() {
   // A doomed fetch fails fast (AbortController 5s) and only advances
   // the backoff counter; wakeRefreshLoopsIfNeeded() still cuts the wait
   // short when the tab becomes visible or the browser fires 'online'.
-  const delay = nextIntervalMs(PRICE_BACKOFF_STEPS_MS, consecutivePriceFailures);
+  let delay = nextIntervalMs(PRICE_BACKOFF_STEPS_MS, consecutivePriceFailures);
+  if (!document.hidden && delay > 5000) { let anyPrice = false; priceStateCache.forEach((s) => { if (s && s.rawPrice != null) anyPrice = true; }); if (!anyPrice) delay = 5000; }   // tiles still show errors and nothing was ever received: keep trying every 5 s, not every minute
+  if (document.hidden && delay < 30000) delay = 30000;      // background: wake rarely, the visible tab returns to 2s by itself
   refreshLoopTimer = setTimeout(async () => {
     // While an active drag is in progress — the cycle simply does
     // nothing this tick and does not reschedule itself: the drag code
@@ -21668,7 +21739,9 @@ let historyEverOk = false;
 let historyRerun = false;
 async function runHistoryCycle(force) {
   if (historyCycleBusy) { if (force === true) historyRerun = true; return; }
+  if (document.hidden && force !== true && Date.now() - lastHistoryCycleTs < BG_HISTORY_MS) { scheduleNextHistoryRefresh(); return; }
   historyCycleBusy = true;
+  lastHistoryCycleTs = Date.now();
   try { await refreshHistory(); } catch (e) { /* refreshHistory handles its own errors; the loop must go on */ } finally { historyCycleBusy = false; }
   if (historyRerun) {
     // asked to start again while this one was in flight (route switched, connection came back): its result is stale
@@ -21716,7 +21789,10 @@ function scheduleNextHistoryRefresh() {
 let hiddenSinceTs = 0;
 function wakeRefreshLoopsIfNeeded(afterLongHide) {
   if (activeDrag) return;
-  let needWake = afterLongHide === true || consecutivePriceFailures > 0 || consecutiveHistoryFailures > 0;
+  // The price loop normally ticks every few seconds while the tab is visible; a longer gap means it was parked in the background, frozen
+  // (Android, sleep, VPN drop) or restored from the back-forward cache — whichever way, fetch now. Does not depend on the hidden timestamp.
+  const loopGap = Date.now() - lastPriceCycleTs > 6000;
+  let needWake = afterLongHide === true || loopGap || consecutivePriceFailures > 0 || consecutiveHistoryFailures > 0;
   if (!needWake) {
     for (const state of priceStateCache.values()) {
       if (state && state.isStale) { needWake = true; break; }
@@ -21726,7 +21802,7 @@ function wakeRefreshLoopsIfNeeded(afterLongHide) {
   pauseRefreshLoop();
   if (historyLoopTimer) { clearTimeout(historyLoopTimer); historyLoopTimer = null; }
   runPriceCycle();
-  runHistoryCycle();
+  runHistoryCycle(true);          // true: a cycle still in flight from before the hide is repeated when it ends (otherwise its failure meant a 5–30 min wait)
 }
 
 window.addEventListener('online', () => wakeRefreshLoopsIfNeeded());
@@ -22545,7 +22621,7 @@ function openPairSearchModal(editItem) {
 }
 
 function closePairSearchModal() {
-  if (window.__pick && !pickDone) { pickSend('pickCancel'); return; }
+  if (window.__pick && !pickDone && !window.__pickFull) { pickSend('pickCancel'); return; }
   // Cancel / tap outside / successful save — all lists are closed.
   resetAllModalLists();
   document.getElementById('pairSearchModal').classList.remove('open');
@@ -24447,6 +24523,7 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
     const copiedPair = { exchange: pendingAdd.exchange, base: pendingAdd.base, quote: pendingAdd.quote };
     closePairSearchModal();
     copyPairToTab(sourceId, targetTabId, confirmedName, copiedPair);
+    if (window.__pick) { pickFinish(watchlist.length ? watchlist[watchlist.length - 1].id : ''); return; }
     selected = null; menuOpen = false; render();
     refreshPrices();
     // We do NOT re-fetch history for the copied pair — copyPairToTab()
@@ -24467,6 +24544,7 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
   if (wasEditing) {
     updatePair(editingItemId, exchange, base, quote, confirmedName);
     movePairToTab(editingItemId, tabId, confirmedName);
+    if (window.__pick) { pickFinish(editingItemId); return; }
     selected = null;
     menuOpen = false;
     render();
@@ -24475,6 +24553,7 @@ document.getElementById('confirmOk').addEventListener('click', async () => {
   }
 
   if (await addPair(exchange, 'spot', base, quote, tabId, confirmedName)) {
+    if (window.__pick) { pickFinish(watchlist.length ? watchlist[watchlist.length - 1].id : ''); return; }
     selected = null;
     menuOpen = false;
     render();
@@ -24507,7 +24586,7 @@ document.getElementById('addPairToggle').addEventListener('click', () => openPai
 //   - neither (the regular "+" in the tab row) — as before, just
 //     close the modal entirely.
 function cancelPairSearchModal() {
-  if (window.__pick && !pickDone) { pickSend('pickCancel'); return; }
+  if (window.__pick && !pickDone) { if (window.__pickFull) { pickBackToMini(); return; } pickSend('pickCancel'); return; }
   if (pairSearchModalMode === 'tab' && !editingTabId) {
     if (tabEditCancelReturnTabId) {
       const returnTabId = tabEditCancelReturnTabId;
@@ -25017,12 +25096,38 @@ async function validatePairSearchAction() {
 // updatePairSearchButtonsState.
 // ----- Pick mode (see the top of <body>): the "Add note" modal as a pair + exchange picker for chart.html -----
 let pickDone = false;
-function pickSend(type, ex, base, quote) {
+function pickSend(type, ex, base, quote, note) {
   pickDone = true;
-  try { parent.postMessage({ exchengine: 'pick', type: type, ex: ex || '', base: base || '', quote: quote || '' }, location.origin === 'null' ? '*' : location.origin); } catch (_) { /* no parent */ }
+  try { parent.postMessage({ exchengine: 'pick', type: type, ex: ex || '', base: base || '', quote: quote || '', note: note || '' }, location.origin === 'null' ? '*' : location.origin); } catch (_) { /* no parent */ }
 }
+let pickNote = null;       // the note the chart was opened from (null: came from outside, or the note is gone)
+window.__pickFull = false;
+function pickGoFull(ex, base, quote) {
+  window.__pickFull = true;
+  document.documentElement.classList.add('pickFull');
+  openPairSearchModal(pickNote);                       // add: next name + last opened tab; edit: the note's own name and tab
+  applyPairSearchFormState({ name: document.getElementById('noteNameInput').value, pairText: base + '/' + quote, exchange: ex, tabId: pendingAdd.tabId, tabName: pendingAdd.tabName, pinned: false, base: base, quote: quote });
+  resetPairSearchUndoHistory();
+  updatePairSearchButtonsState();
+}
+function pickBackToMini() {
+  window.__pickFull = false;
+  document.documentElement.classList.remove('pickFull');
+  editingItemId = null; pairSearchReturnToSearch = false; pendingCopySourceId = null; pendingDeleteId = null;
+  document.getElementById('modalTitleText').textContent = 'Chart';
+  showModalStep('search');
+  updatePairSearchButtonsState();
+}
+function pickFinish(note) { try { localStorage.setItem('wlSync', String(Date.now())); } catch (_) { /* no storage */ } pickSend('pairPicked', pendingAdd.exchange, pendingAdd.base, pendingAdd.quote, note); }
+document.getElementById('pairSearchSave').addEventListener('click', async () => {
+  const result = await validatePairSearchAction();
+  if (!result.ok) { await askOk(result.lines); return; }
+  pickGoFull(pendingAdd.exchange, result.parsed.base, result.parsed.quote);
+});
 function pickBoot() {
   const q = new URLSearchParams(location.search);
+  const nid = q.get('note') || '';
+  pickNote = nid ? (watchlist.find(p => p.id === nid) || null) : null;
   openPairSearchModal(null);
   document.getElementById('modalTitleText').textContent = 'Chart';
   const ex = q.get('ex'); const base = (q.get('base') || '').toUpperCase(); const quote = (q.get('quote') || '').toUpperCase();
@@ -25032,6 +25137,7 @@ function pickBoot() {
     resetPairSearchUndoHistory();
   }
   updatePairSearchButtonsState();
+  try { parent.postMessage({ exchengine: 'pick', type: 'pickReady' }, location.origin === 'null' ? '*' : location.origin); } catch (_) { /* no parent */ }
 }
 document.getElementById('pairSearchModify').addEventListener('click', async () => {
   const result = await validatePairSearchAction();
@@ -25041,7 +25147,7 @@ document.getElementById('pairSearchModify').addEventListener('click', async () =
   }
   pendingAdd.base = result.parsed.base;
   pendingAdd.quote = result.parsed.quote;
-  if (window.__pick) { pickSend('pairPicked', pendingAdd.exchange, pendingAdd.base, pendingAdd.quote); return; }
+  if (window.__pick && !window.__pickFull) { pickSend('pairPicked', pendingAdd.exchange, pendingAdd.base, pendingAdd.quote, ''); return; }
   pairSearchReturnToSearch = true;
   pairSearchSavedEditingId = editingItemId;
   goToConfirmStep();
@@ -25113,6 +25219,14 @@ document.getElementById('pairSearchDelete').addEventListener('click', () => {
 // from both applyStaticTranslations (language change on an already-
 // open modal — first button label must also translate) and
 // openPairSearchModal (on open/mode change).
+function layoutPairSearchButtons() {
+  const row = document.getElementById('pairSearchButtonsRow');
+  if (!row) return;
+  const vis = [];
+  row.querySelectorAll('button').forEach((b) => { b.style.marginRight = ''; if (getComputedStyle(b).display !== 'none') vis.push(b); });
+  row.classList.toggle('btnStd', vis.length <= 3);
+  if (vis.length === 3) vis[0].style.marginRight = 'auto';
+}
 function updatePairSearchButtonsState() {
   const isAdd = !editingItemId;
   // Bottom row — always EN: Copy / Delete / Cancel / Add|Edit.
@@ -25121,7 +25235,7 @@ function updatePairSearchButtonsState() {
   const delBtn = document.getElementById('pairSearchDelete');
   if (modifyBtn) {
     const label = modifyBtn.querySelector('.pairSearchBtnLabel');
-    if (label) label.textContent = window.__pick ? 'Apply' : (isAdd ? 'Add' : 'Save');
+    if (label) label.textContent = (window.__pick && !window.__pickFull) ? 'Apply' : (isAdd ? 'Add' : 'Save');
   }
   if (copyBtn) {
     const label = copyBtn.querySelector('.pairSearchBtnLabel');
@@ -25172,22 +25286,25 @@ function updatePairSearchButtonsState() {
       modifyBtn.disabled = !changes.any || !nameOkEdit;
     }
     if (listsUnavailable) modifyBtn.disabled = true;
+    if (window.__pick && !window.__pickFull) modifyBtn.disabled = !!listsUnavailable;   // mini window: Apply only needs a pair; the (hidden) name is not checked
     modifyBtn.style.pointerEvents = modifyBtn.disabled ? 'none' : '';
   }
 
   // Copy: unique only (≠ initial, non-empty, not taken).
   if (copyBtn) {
     copyBtn.disabled = isAdd || !nameOkCopy || listsUnavailable;
-    copyBtn.style.visibility = isAdd ? 'hidden' : '';
+    copyBtn.style.display = isAdd ? 'none' : '';
     copyBtn.style.pointerEvents = copyBtn.disabled ? 'none' : '';
   }
 
   // Delete: all fields as on entry.
   if (delBtn) {
     delBtn.disabled = isAdd || changes.any;
-    delBtn.style.visibility = isAdd ? 'hidden' : '';
+    delBtn.style.display = isAdd ? 'none' : '';
     delBtn.style.pointerEvents = delBtn.disabled ? 'none' : '';
   }
+
+  layoutPairSearchButtons();
 
   // Name checks follow the buttons: a check per ACTION THAT IS AVAILABLE NOW (red = Delete, blue = Copy, yellow = Save).
   if (ind) {
@@ -26008,7 +26125,7 @@ function renderInfoPanels() {
   // them (the modal document footer's own links, for instance) is
   // unaffected.
   const legalLinksHtml = SITE_DOC_ORDER
-    .map(id => `<a href="#" class="docFooterLink" data-footer-link="${id}">${escapeHtml(SITE_DOCS[id].label).replace(/ /g, '\u00A0')}</a>`)
+    .map(id => `<a href="${siteDocUrl(id)}" class="docFooterLink" data-footer-link="${id}">${escapeHtml(SITE_DOCS[id].label).replace(/ /g, '\u00A0')}</a>`)
     .join('<span class="docFooterSep">|</span>');
   const legalMarqueeHtml = legalMarqueeRows().map((row, i) =>
     '<div class="legalMarquee' + (i % 2 ? ' legalMarquee--rev' : '') + '" data-mq="' + i + '"><div class="legalMarqueeTrack"></div></div>').join('');
@@ -26023,7 +26140,7 @@ function renderInfoPanels() {
     + [
       t('welcomeLine5'),
       t('welcomeLine6'),
-      t('welcomeLine7').replace('Contacts', '<a href="#" class="docFooterLink" data-footer-link="contacts">Contacts</a>'),
+      t('welcomeLine7').replace('Contacts', '<a href="' + siteDocUrl('contacts') + '" class="docFooterLink" data-footer-link="contacts">Contacts</a>'),
     ].map((line) => '<div class="welcomeLine">' + welcomeArrow + '<span>' + line + '</span></div>').join('');
 
   root.innerHTML = `
@@ -26057,7 +26174,7 @@ function renderInfoPanels() {
           <div class="schemaStale">${escapeHtml(t('schemaStale'))}</div>
         </div>
         <div class="schemaCaption">
-          ${[t('schemaLine1'), t('schemaLine2'), t('schemaLine3'), t('schemaLine4'), schemaClickLine('schemaLine5'), t('schemaLine6'), t('schemaLine7')].map((line) => '<div class="welcomeLine">' + welcomeArrow + '<span>' + line + '</span></div>').join('')}
+          ${[t('schemaLine1'), t('schemaLine2'), t('schemaLine3'), t('schemaLine4'), schemaClickLine('schemaLine5'), t('schemaLine6'), schemaClickLine('schemaLineMid'), t('schemaLine7')].map((line) => '<div class="welcomeLine">' + welcomeArrow + '<span>' + line + '</span></div>').join('')}
           <p class="schemaClosing">${t('schemaClosing')}</p>
         </div>
       </div>
@@ -26074,7 +26191,7 @@ function renderInfoPanels() {
         ${legalMarqueeHtml}
         <div class="docFooter docFooterLinks">${legalLinksHtml}</div>
         <div class="infoPanelLegalCopy"><img class="legalCopyLogo" src="data:," width="48" height="48" alt="ExchEngine — Bitcoin price and crypto exchange rates monitor: BTC, ETH, USDT, USDC, altcoins and stablecoins" onerror="this.onerror=null;this.src=LEGAL_LOGO_DATA_URI">ExchEngine © 2005–<span id="infoPanelLegalCopyYear"></span>. Released under the MIT License.</div>
-        <div class="infoPanelBld">2026-11-16 05:24</div>
+        <div class="infoPanelBld">2026-11-22 05:35</div>
       </div>
     </div>
   `;
@@ -26221,6 +26338,26 @@ if (!window.__pick) startLogoFlourishLoop();
 // client-side period change will pick it up.
 // Start-up order matters on a filtered link: prices first (this also settles which route works), only then the history
 // and the config — otherwise three groups of requests race on the same dead connection and the charts stay empty.
+// The chart (its pair window, in an iframe) saved or changed a note: it sets localStorage['wlSync']; this page picks the list up from the storage at once
+// ('storage' event in a background tab) or when it becomes visible again.
+let wlSyncSeen = ''; try { wlSyncSeen = localStorage.getItem('wlSync') || ''; } catch (_) { /* no storage */ }
+let wlSyncPending = false;
+function wlSyncCheck(force) {
+  if (window.__pick) return;
+  let cur = ''; try { cur = localStorage.getItem('wlSync') || ''; } catch (_) { return; }
+  if (!force && cur === wlSyncSeen && !wlSyncPending) return;
+  if (document.querySelector('.modalOverlay.open')) { wlSyncPending = true; return; }   // a dialog is open: not under the user's hands, later
+  wlSyncPending = false; wlSyncSeen = cur;
+  watchlist = loadWatchlist(); tabs = loadTabs(); activeTabId = loadActiveTabId(tabs);
+  selected = null; menuOpen = false;
+  render();
+  refreshPrices();
+  watchlist.forEach((it) => { if (it && !historyStateCache.has(it.id)) fetchOneHistory(it); });
+}
+window.addEventListener('storage', (e) => { if (e.key === 'wlSync') wlSyncCheck(false); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) wlSyncCheck(false); });
+window.addEventListener('focus', () => wlSyncCheck(false));
+window.addEventListener('pageshow', () => wlSyncCheck(false));
 if (!window.__pick) runPriceCycle().then(() => { fetchConfig(); runHistoryCycle(); });
 else pickBoot();
 </script>
