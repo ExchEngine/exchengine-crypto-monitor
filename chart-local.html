@@ -421,7 +421,7 @@
   </div>
   <div id="stage">
     <canvas id="cv" role="img" aria-label="Price chart"></canvas>
-    <div id="bld">2026-11-22 05:35</div>
+    <div id="bld">2026-11-24 20:30</div>
     <div id="msg"><div id="msgText"></div><button id="msgRetry" type="button" style="display:none"></button></div>
     <div id="note"></div>
     <button id="btnLatest" class="fab" type="button">&#9654;&#9654;</button>
@@ -1046,14 +1046,29 @@ function powSolve(token, bits, done) {
   }
   slice();
 }
+// Реферальная ссылка (?ref=КОД в адресе): код только из адреса ЭТОЙ загрузки (буквы, цифры, _ и -, до 32), нигде не хранится; уходит в запросы /api/cid вместе со
+// случайным d вкладки (одинаковым у всех попыток одного визита), у нового устройства после получения метки — один запрос связки b=1. Как в index.html.
+var REF = (function () { try { var m = /[?&]ref=([A-Za-z0-9_-]{1,32})(?:&|$)/.exec(location.search); return m ? m[1] : ''; } catch (e) { return ''; } })();
+var REF_D = (function () {
+  if (!REF) return '';
+  var d = ''; try { d = sessionStorage.getItem('refD') || ''; } catch (e) { d = ''; }
+  if (!/^[0-9a-f]{10}$/.test(d)) { d = ''; for (var i = 0; i < 10; i++) d += '0123456789abcdef'.charAt(Math.floor(Math.random() * 16)); try { sessionStorage.setItem('refD', d); } catch (e2) { /* только в памяти */ } }
+  return d;
+})();
+function refQuery(q) { return REF ? (q ? q + '&' : '?') + 'ref=' + REF + '&d=' + REF_D : q; }
 function refreshCid(attempt, solved) {
   var n = attempt || 0; var x = new XMLHttpRequest(); var over = false;
   function retryLater() { if (over) return; over = true; if (n < 4) setTimeout(function () { refreshCid(n + 1); }, [15000, 60000, 120000, 300000][n]); }
-  var query = solved ? '?p=' + solved.t + '&n=' + solved.n : (CID ? '?c=' + CID : '');
+  var sentC = !solved && !!CID;
+  var query = refQuery(solved ? '?p=' + solved.t + '&n=' + solved.n : (CID ? '?c=' + CID : ''));
   x.open('GET', apiBase() + '/api/cid' + query, true); x.timeout = 10000;
   x.onload = function () {
     var j = null; try { j = JSON.parse(x.responseText); } catch (e) { j = null; }
-    if (j && CID_RE.test(String(j.cid))) { CID = j.cid; lsSet('contactCid', CID); return; }
+    if (j && CID_RE.test(String(j.cid))) {
+      CID = j.cid; lsSet('contactCid', CID);
+      if (REF && !sentC) { try { var bx = new XMLHttpRequest(); bx.open('GET', apiBase() + '/api/cid?c=' + CID + '&ref=' + REF + '&d=' + REF_D + '&b=1', true); bx.send(); } catch (e3) { /* связка не обязательна */ } }
+      return;
+    }
     var round = solved ? solved.round : 0;
     if (j && j.pow && POW_RE.test(String(j.pow.t)) && Number(j.pow.b) >= 1 && Number(j.pow.b) <= 24 && round < 3) {
       var tok = String(j.pow.t);

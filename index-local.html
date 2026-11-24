@@ -6763,7 +6763,7 @@ if (window.__pick) document.documentElement.className += ' pickMode';
 <div class="infoPanelLegalHeader"><div class="infoPanelTitle">Exchange Engine That Never Stops</div></div>
 <div class="docFooter docFooterLinks"><a class="docFooterLink" href="https://www.exchengine.com/about.html">About Us</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/contacts.html">Contacts</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/disclaimer.html">Disclaimer</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/privacy.html">Privacy Policy</a><span class="docFooterSep">|</span><a class="docFooterLink" href="https://www.exchengine.com/terms.html">Terms of Service</a></div>
 <div class="infoPanelLegalCopy"><img class="legalCopyLogo" loading="lazy" src="data:," width="48" height="48" alt="ExchEngine — Bitcoin price and crypto exchange rates monitor: BTC, ETH, USDT, USDC, altcoins and stablecoins">ExchEngine © 2005–2026. Released under the MIT License.</div>
-<div class="infoPanelBld">2026-11-22 05:35</div>
+<div class="infoPanelBld">2026-11-24 19:40</div>
 </section>
 </div>
 </div>
@@ -7363,6 +7363,25 @@ const API_POW_TOKEN_RE = /^[0-9a-f.]{30,60}$/;
 let apiCid = '';
 try { const v0 = localStorage.getItem(API_CID_KEY) || ''; if (API_CID_RE.test(v0)) apiCid = v0; } catch (e) { /* storage unavailable: id lives in memory */ }
 function apiCidParam() { return apiCid ? '&c=' + apiCid : ''; }
+// Link attribution (?ref=CODE on the address, e.g. a Telegram link). Only the code from the address of THIS page load is used (letters,
+// digits, _ and -, up to 32); nothing is stored for later, no personal data. It rides on the page's /api/cid requests together with a
+// random id of this tab session (d), so that the server log can count devices per code without double counting retries on a slow link:
+// every attempt of one visit carries the same d. After a NEW device receives its id, one extra request ties id and d together (b=1).
+const REF = (function () {
+  try { const m = /[?&]ref=([A-Za-z0-9_-]{1,32})(?:&|$)/.exec(location.search); return m ? m[1] : ''; } catch (e) { return ''; }
+})();
+const REF_D = (function () {
+  if (!REF) return '';
+  let d = '';
+  try { d = sessionStorage.getItem('refD') || ''; } catch (e) { d = ''; }
+  if (!/^[0-9a-f]{10}$/.test(d)) {
+    d = '';
+    for (let i = 0; i < 10; i++) d += '0123456789abcdef'.charAt(Math.floor(Math.random() * 16));
+    try { sessionStorage.setItem('refD', d); } catch (e) { /* kept in memory only */ }
+  }
+  return d;
+})();
+function refQuery(query) { return REF ? (query ? query + '&' : '?') + 'ref=' + REF + '&d=' + REF_D : query; }
 const API_POW_K = new Int32Array([
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -7427,13 +7446,17 @@ function refreshApiCid(attempt, solved) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 10000);
   const retryLater = () => { if (n < 4) setTimeout(() => refreshApiCid(n + 1), [15000, 60000, 120000, 300000][n]); };
-  const query = solved ? '?p=' + solved.t + '&n=' + solved.n : (apiCid ? '?c=' + apiCid : '');
+  const sentC = !solved && !!apiCid;
+  const query = refQuery(solved ? '?p=' + solved.t + '&n=' + solved.n : (apiCid ? '?c=' + apiCid : ''));
   fetch(apiBase() + '/api/cid' + query, { signal: ctl.signal })
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))))
     .then((j) => {
       if (j && API_CID_RE.test(String(j.cid))) {
         apiCid = j.cid;
         try { localStorage.setItem(API_CID_KEY, apiCid); } catch (e) { /* storage unavailable */ }
+        if (REF && !sentC) {                                      // a new device: tie its id to this visit (once, fire and forget)
+          try { fetch(apiBase() + '/api/cid?c=' + apiCid + '&ref=' + REF + '&d=' + REF_D + '&b=1').catch(function () {}); } catch (e2) { /* ignore */ }
+        }
         return;
       }
       const round = solved ? solved.round : 0;
@@ -26191,7 +26214,7 @@ function renderInfoPanels() {
         ${legalMarqueeHtml}
         <div class="docFooter docFooterLinks">${legalLinksHtml}</div>
         <div class="infoPanelLegalCopy"><img class="legalCopyLogo" src="data:," width="48" height="48" alt="ExchEngine — Bitcoin price and crypto exchange rates monitor: BTC, ETH, USDT, USDC, altcoins and stablecoins" onerror="this.onerror=null;this.src=LEGAL_LOGO_DATA_URI">ExchEngine © 2005–<span id="infoPanelLegalCopyYear"></span>. Released under the MIT License.</div>
-        <div class="infoPanelBld">2026-11-22 05:35</div>
+        <div class="infoPanelBld">2026-11-24 19:40</div>
       </div>
     </div>
   `;

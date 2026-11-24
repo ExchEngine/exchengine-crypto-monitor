@@ -259,6 +259,7 @@
   .pcv.ord .fab.dn, .pcv.trd .fab.dn { left: calc(75% - 1.2rem); }
   .pcv .fab.fit { right: 3px; bottom: 3px; width: 50px; }
   .pcv .fab.fit.on { border-color: #4a9d6e; color: #7fd9a5; background: #1e2620; }
+  .pcv .fab.dex { right: 3px; width: 1.6rem; height: 1.6rem; padding: 0; }
   .pcv .fab.dsm { right: 3px; width: 50px; height: 1.6rem; font-size: 0.7rem; }
   @media (hover: hover) and (pointer: fine) { .pcv .fab:hover { border-color: #555; } }
   #stale { display: none; position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); z-index: 5; background: #242a31; color: #ddd; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; white-space: nowrap; }
@@ -390,7 +391,7 @@
       <div id="r2"><button id="multi" type="button"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="miter" aria-hidden="true"><rect x="4.5" y="8.5" width="11" height="11"></rect><path d="M8.5 8.5V4.5h11v11h-4"></path></svg></button><button id="btnRefresh" type="button"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(-0.6 0.3)"><path d="M20 12a8 8 0 1 1-2.6-5.9"></path><path d="M20 4v5h-5"></path></g></svg></button></div>
     </div>
   </div>
-  <div id="stage"><div id="grid" class="single"></div><div id="msg"></div><div id="stale"></div><div id="bld">2026-11-22 05:55</div></div>
+  <div id="stage"><div id="grid" class="single"></div><div id="msg"></div><div id="stale"></div><div id="bld">2026-11-24 04:21</div></div>
 </div>
 
 <!--SEO-BODY:BEGIN (rewritten by book-server; visually hidden text for screen readers and crawlers)-->
@@ -688,14 +689,29 @@ function powSolve(token, bits, done) {
   }
   slice();
 }
+// Реферальная ссылка (?ref=КОД в адресе): код только из адреса ЭТОЙ загрузки (буквы, цифры, _ и -, до 32), нигде не хранится; уходит в запросы /api/cid вместе со
+// случайным d вкладки (одинаковым у всех попыток одного визита), у нового устройства после получения метки — один запрос связки b=1. Как в index.html.
+var REF = (function () { try { var m = /[?&]ref=([A-Za-z0-9_-]{1,32})(?:&|$)/.exec(location.search); return m ? m[1] : ''; } catch (e) { return ''; } })();
+var REF_D = (function () {
+  if (!REF) return '';
+  var d = ''; try { d = sessionStorage.getItem('refD') || ''; } catch (e) { d = ''; }
+  if (!/^[0-9a-f]{10}$/.test(d)) { d = ''; for (var i = 0; i < 10; i++) d += '0123456789abcdef'.charAt(Math.floor(Math.random() * 16)); try { sessionStorage.setItem('refD', d); } catch (e2) { /* только в памяти */ } }
+  return d;
+})();
+function refQuery(q) { return REF ? (q ? q + '&' : '?') + 'ref=' + REF + '&d=' + REF_D : q; }
 function refreshCid(attempt, solved) {
   var n = attempt || 0; var x = new XMLHttpRequest(); var over = false;
   function retryLater() { if (over) return; over = true; if (n < 4) setTimeout(function () { refreshCid(n + 1); }, [15000, 60000, 120000, 300000][n]); }
-  var query = solved ? '?p=' + solved.t + '&n=' + solved.n : (CID ? '?c=' + CID : '');
+  var sentC = !solved && !!CID;
+  var query = refQuery(solved ? '?p=' + solved.t + '&n=' + solved.n : (CID ? '?c=' + CID : ''));
   x.open('GET', apiBase() + '/api/cid' + query, true); x.timeout = 10000;
   x.onload = function () {
     var j = null; try { j = JSON.parse(x.responseText); } catch (e) { j = null; }
-    if (j && CID_RE.test(String(j.cid))) { CID = j.cid; lsSet('contactCid', CID); return; }
+    if (j && CID_RE.test(String(j.cid))) {
+      CID = j.cid; lsSet('contactCid', CID);
+      if (REF && !sentC) { try { var bx = new XMLHttpRequest(); bx.open('GET', apiBase() + '/api/cid?c=' + CID + '&ref=' + REF + '&d=' + REF_D + '&b=1', true); bx.send(); } catch (e3) { /* связка не обязательна */ } }
+      return;
+    }
     var round = solved ? solved.round : 0;
     if (j && j.pow && POW_RE.test(String(j.pow.t)) && Number(j.pow.b) >= 1 && Number(j.pow.b) <= 24 && round < 3) {
       var tok = String(j.pow.t);
@@ -1179,15 +1195,19 @@ function dvZone(x, y) {                                                         
   return ix ? 'pax' : 'plot';
 }
 // ---- Deriv: вторая и третья производные накопленного объёма по цене (две панели под основным графиком) ----
-var DER = { on: false, sm: 2, ex: 3, f1: 0.22, f2: 0.22 };                              // on — показать панели; sm — индекс сглаживания; f1/f2 — высоты панелей долями поля
-var DER_EX = ['none', '1', '2', '1 & 2']; var DER_SM = ['max', 'high', 'norm', 'low', 'no']; var DER_SG = [24, 14, 8, 4, 0.7]; var DER_TH = [0.02, 0.02, 0.03, 0.05, 0.08]; var DER_MIN = 66; var DER_BH = 26;   // σ ядра в пикселях: масштаб сглаживания привязан к тому, что видно на экране
+var DER = { on: false, sm: 2, e1: 2, e2: 2, f1: 0.35 };                                  // on - панель f''; sm - сглаживание; e1/e2 - состояние кнопок extr1/extr2 (0..3); f1 - доля высоты поля
+var DER_SM = ['max', 'high', 'norm', 'low', 'no']; var DER_SG = [24, 14, 8, 4, 0.7]; var DER_TH = [0.02, 0.02, 0.03, 0.05, 0.08]; var DER_MIN = 146; var DER_BH = 26;   // sigma ядра в пикселях; DER_MIN - высота, при которой в правой колонке помещается всё
+var DER_C1 = '#19c3d8'; var DER_C2 = '#4a9eff';                                      // extr1 (нули f'') - бирюзовый, extr2 (экстремумы f'') - синий
 (function () {
   try {
-    DER.on = lsGet('bookDeriv') === '1'; var s = parseInt(lsGet('bookDerivSm'), 10); if (s >= 0 && s < 5) DER.sm = s; var ex = parseInt(lsGet('bookDerivEx'), 10); if (ex >= 0 && ex < 4) DER.ex = ex;
-    var f = String(lsGet('bookDerivPh') || '').split(','); var a = parseFloat(f[0]); var b = parseFloat(f[1]); if (a > 0.05 && a < 0.6) DER.f1 = a; if (b > 0.05 && b < 0.6) DER.f2 = b;
+    DER.on = lsGet('bookDeriv') === '1'; var s = parseInt(lsGet('bookDerivSm'), 10); if (s >= 0 && s < 5) DER.sm = s;
+    var ex = String(lsGet('bookDerivEx') || '');
+    if (ex.indexOf(',') > 0) { var p2 = ex.split(','); var u = parseInt(p2[0], 10); var v = parseInt(p2[1], 10); if (u >= 0 && u < 4) DER.e1 = u; if (v >= 0 && v < 4) DER.e2 = v; }
+    else if (ex !== '') { var o = parseInt(ex, 10); if (o === 0) { DER.e1 = 0; DER.e2 = 0; } else if (o === 1) { DER.e1 = 2; DER.e2 = 0; } else if (o === 2) { DER.e1 = 0; DER.e2 = 2; } }
+    var hf = parseFloat(lsGet('bookDerivH')); if (hf > 0.05 && hf < 0.95) DER.f1 = hf;
   } catch (e) { /* значения по умолчанию */ }
 })();
-function derSave() { lsSet('bookDeriv', DER.on ? '1' : '0'); lsSet('bookDerivSm', String(DER.sm)); lsSet('bookDerivEx', String(DER.ex)); lsSet('bookDerivPh', DER.f1.toFixed(3) + ',' + DER.f2.toFixed(3)); }
+function derSave() { lsSet('bookDeriv', DER.on ? '1' : '0'); lsSet('bookDerivSm', String(DER.sm)); lsSet('bookDerivEx', DER.e1 + ',' + DER.e2); lsSet('bookDerivH', DER.f1.toFixed(3)); }
 var derKer = {};
 function derKernel(sg) {                                                         // производные гауссова ядра: g' и g'' (в пикселях)
   var k = derKer[sg]; if (k) return k; var m = Math.min(130, Math.ceil(3.5 * sg) + 1); var g1 = []; var g2 = []; var s2 = sg * sg; var nrm = 1 / (sg * Math.sqrt(2 * Math.PI));
@@ -1221,48 +1241,70 @@ function derZeros(f, i0, i1, A, th) {                                           
   for (i = 0; i < zs.length; i++) if (ex[i] >= thr && ex[i + 1] >= thr) out.push(zs[i]);
   return out;
 }
-function derPanes(c, o) {                                                        // панели f'' и f''' на общей оси цены + пунктиры нулей и плашки цен у оси
-  var L = o.L; var pw = o.pw; var N = Math.max(2, Math.floor(pw)); var sg = DER_SG[DER.sm]; var lo = o.lo; var hi = o.hi; var bp = o.bp; var ap = o.ap;
+function derGeom(top, H) {                                                       // нулевая линия чуть выше середины, пока снизу нужно место под extr2 и Smooth
+  var yt = top + 12; var yb = top + H - 3; var zr = Math.max(63, Math.min((H + 9) / 2, H - 81)); var zy = top + zr;
+  return { yt: yt, yb: yb, zy: zy, hh: Math.max(4, Math.min(zy - yt, yb - zy)) };
+}
+function derCurveAt(pts, P, bid) {                                               // значение ступенчатой кривой глубины на цене P (точки идут от середины наружу)
+  var v = 0; for (var k = 0; k < pts.length; k++) { if (bid ? pts[k][0] >= P : pts[k][0] <= P) v = pts[k][1]; else break; } return v;
+}
+function derIcon(st, col) {                                                      // кружок кнопки extr: контур и сектор заливки - 0, 1/3, 2/3, всё
+  var f = '';
+  if (st >= 3) f = '<circle r="6.5" fill="' + col + '"/>';
+  else if (st === 1) f = '<path d="M0 0L0 -6.5A6.5 6.5 0 0 1 5.629 3.25Z" fill="' + col + '"/>';
+  else if (st === 2) f = '<path d="M0 0L0 -6.5A6.5 6.5 0 1 1 -5.629 3.25Z" fill="' + col + '"/>';
+  return '<svg width="16" height="16" viewBox="-8 -8 16 16" style="display:block;margin:auto"><circle r="6.5" fill="none" stroke="' + col + '" stroke-width="1.4"/>' + f + '</svg>';
+}
+function derPanes(c, o) {                                                        // панель f'' под шкалой цены: кривая, нули (extr1) и экстремумы (extr2) с пунктирами, точками и плашками
+  var L = o.L; var pw = o.pw; var N = Math.max(2, Math.floor(pw)); var sg = DER_SG[DER.sm]; var lo = o.lo; var hi = o.hi; var bp = o.bp; var ap = o.ap; var th = DER_TH[DER.sm];
   var dB = derSide(bp, true, lo, hi, N, sg, o.mid, bp[bp.length - 1][0]); var dA = derSide(ap, false, lo, hi, N, sg, o.mid, ap[ap.length - 1][0]);
-  var axisY = o.Tp + o.ph; var base = axisY + o.Bt; var tops = [base, base + o.h1]; var hs = [o.h1, o.h2]; var marks = []; var pn; var q; var i;
+  var axisY = o.Tp + o.ph; var top = axisY + o.Bt; var H = o.h1; var G = derGeom(top, H); var yt = G.yt; var zy = G.zy; var hh = G.hh; var sides = [dB, dA]; var q; var i;
   function cx(zi) { return L + (zi + 0.5) * pw / N; }
-  for (pn = 0; pn < 2; pn++) {
-    var key = pn === 0 ? 'f2' : 'f3'; var A = 1e-30; var sides = [dB, dA];
-    for (q = 0; q < 2; q++) for (i = sides[q].i0; i <= sides[q].i1; i++) { var av = Math.abs(sides[q][key][i]); if (av > A) A = av; }
-    var yt = tops[pn] + 12; var yb = tops[pn] + hs[pn] - 3; var zy = (yt + yb) / 2; var hh = (yb - yt) / 2;
-    c.lineWidth = 1; c.strokeStyle = '#6a6a74'; c.beginPath(); c.moveTo(L, Math.round(tops[pn]) + 0.5); c.lineTo(o.w, Math.round(tops[pn]) + 0.5); c.stroke();   // граница панели: продолжена за шкалу — видно, где тянуть
-    c.strokeStyle = '#4c4c56'; c.beginPath(); c.moveTo(L, Math.round(zy) + 0.5); c.lineTo(L + pw, Math.round(zy) + 0.5); c.stroke();
-    c.save(); c.beginPath(); c.rect(L, tops[pn] + 1, pw, hs[pn] - 1); c.clip(); c.lineWidth = 1; c.lineJoin = 'round';
-    for (q = 0; q < 2; q++) {
-      var sd = sides[q]; var col = q === 0 ? COL.up : COL.down; if (sd.i1 <= sd.i0) continue;
-      c.fillStyle = q === 0 ? 'rgba(38,166,91,0.22)' : 'rgba(255,74,51,0.22)'; c.beginPath(); c.moveTo(cx(sd.i0), zy);   // заливка до нуля — как у графика глубины
-      for (i = sd.i0; i <= sd.i1; i++) c.lineTo(cx(i), zy - sd[key][i] / A * hh);
-      c.lineTo(cx(sd.i1), zy); c.closePath(); c.fill();
-      c.strokeStyle = col; c.beginPath();
-      for (i = sd.i0; i <= sd.i1; i++) { var yy = zy - sd[key][i] / A * hh; if (i === sd.i0) c.moveTo(cx(i), yy); else c.lineTo(cx(i), yy); }
-      c.stroke();
-      var zz = derZeros(sd[key], sd.i0, sd.i1, A, DER_TH[DER.sm]); for (i = 0; i < zz.length; i++) marks.push({ pn: pn, x: cx(zz[i]), y: zy, col: col, price: lo + (zz[i] + 0.5) / N * (hi - lo) });
-    }
-    c.restore();
-    var fo = c.font; c.font = 'italic 13px "Times New Roman", Times, "DejaVu Serif", serif'; txt(c, pn === 0 ? "f''" : "f'''", o.w - o.R + 4, tops[pn] + 17, 'left', COL.dim); c.font = fo;   // курсив пропорциональным шрифтом: в моноширинном апострофы разъезжаются
-    var wordY = tops[pn] + hs[pn] - 3 - DER_BH - 8;                                  // у низа каждой панели — слово и селектор (Extrem / Smooth)
-    if (!(hs[pn] >= DER_MIN && Math.abs(zy - wordY) < 11)) txt(c, '0', o.w - o.R + 4, zy, 'left', COL.dim);
+  var A = 1e-30; var A3 = 1e-30;
+  for (q = 0; q < 2; q++) for (i = sides[q].i0; i <= sides[q].i1; i++) { var a2 = Math.abs(sides[q].f2[i]); if (a2 > A) A = a2; var a3 = Math.abs(sides[q].f3[i]); if (a3 > A3) A3 = a3; }
+  c.lineWidth = 1; c.strokeStyle = '#6a6a74'; c.beginPath(); c.moveTo(L, Math.round(top) + 0.5); c.lineTo(o.w, Math.round(top) + 0.5); c.stroke();
+  c.strokeStyle = '#4c4c56'; c.beginPath(); c.moveTo(L, Math.round(zy) + 0.5); c.lineTo(L + pw, Math.round(zy) + 0.5); c.stroke();
+  c.save(); c.beginPath(); c.rect(L, top + 1, pw, H - 1); c.clip(); c.lineWidth = 1; c.lineJoin = 'round';
+  for (q = 0; q < 2; q++) {
+    var sd = sides[q]; var col = q === 0 ? COL.up : COL.down; if (sd.i1 <= sd.i0) continue;
+    c.fillStyle = q === 0 ? 'rgba(38,166,91,0.22)' : 'rgba(255,74,51,0.22)'; c.beginPath(); c.moveTo(cx(sd.i0), zy);
+    for (i = sd.i0; i <= sd.i1; i++) c.lineTo(cx(i), zy - sd.f2[i] / A * hh);
+    c.lineTo(cx(sd.i1), zy); c.closePath(); c.fill();
+    c.strokeStyle = col; c.beginPath();
+    for (i = sd.i0; i <= sd.i1; i++) { var yy = zy - sd.f2[i] / A * hh; if (i === sd.i0) c.moveTo(cx(i), yy); else c.lineTo(cx(i), yy); }
+    c.stroke();
   }
-  if (hs[1] >= DER_MIN) txt(c, 'Smooth', o.w - o.R + 4, tops[1] + hs[1] - 3 - DER_BH - 8, 'left', COL.dim);
-  if (hs[0] >= DER_MIN) txt(c, 'Extrem', o.w - o.R + 4, tops[0] + hs[0] - 3 - DER_BH - 8, 'left', COL.dim);
-  marks.sort(function (a, b) { return a.pn - b.pn || a.x - b.x; });
-  var placed = []; var plates = [];
-  for (i = 0; i < marks.length; i++) {
-    var mk = marks[i]; var near = false; for (q = 0; q < placed.length; q++) if (Math.abs(placed[q] - mk.x) < 3) { near = true; break; } if (near) continue;   // совсем рядом с уже отмеченным — не дублируем
-    placed.push(mk.x);
-    var pcol = mk.pn === 0 ? '#19c3d8' : '#4a9eff';                                // цвет метки — по производной: f'' бирюзовый, f''' синий
-    c.save(); c.strokeStyle = pcol; c.lineWidth = 1; c.setLineDash(mk.pn === 0 ? [5, 3] : [2, 3]); c.beginPath(); c.moveTo(Math.round(mk.x) + 0.5, mk.y); c.lineTo(Math.round(mk.x) + 0.5, axisY); c.stroke(); c.restore();
-    c.fillStyle = pcol; c.beginPath(); c.arc(mk.x, mk.y, 2.5, 0, 6.2832); c.fill();
-    if (!(DER.ex === 3 || DER.ex === mk.pn + 1)) continue;                       // цены экстремумов: none / 1 (нули f'') / 2 (нули f''') / 1 & 2
-    var room = true; for (q = 0; q < plates.length; q++) if (Math.abs(plates[q] - mk.x) < 17) { room = false; break; } if (!room) continue;   // плашке тесно: линия и точка остаются
-    plates.push(mk.x);
-    var s2 = o.fmt(mk.price); var tl = Math.min(Math.ceil(tw(c, s2)) + 12, o.ph - 2); var rx = Math.max(L, Math.min(L + pw - 16, mk.x - 8)); var ry = axisY - tl;   // угловая плашка как на chart, над осью цены глубины, текст снизу вверх
-    c.fillStyle = '#000'; c.fillRect(rx, ry, 16, tl); c.save(); c.translate(rx + 8, ry + tl - 6); c.rotate(-Math.PI / 2); txt(c, s2, 0, 0.5, 'left', pcol); c.restore();   // фон чёрный; цвет по производной (без различия bid/ask)
+  c.restore();
+  var rx0 = o.w - o.R + 4; var fo = c.font; c.font = 'italic 13px "Times New Roman", Times, "DejaVu Serif", serif'; txt(c, "f''", rx0, top + 17, 'left', COL.dim); c.font = fo;
+  txt(c, '0', rx0, zy, 'left', COL.dim);
+  if (H >= DER_MIN) {
+    txt(c, 'extr', o.w - 4, zy, 'right', COL.dim); txt(c, '1', o.w - 35, zy - 22, 'right', DER_C1); txt(c, '2', o.w - 35, zy + 22, 'right', DER_C2);
+    txt(c, 'Smooth', rx0, top + H - 3 - DER_BH - 8, 'left', COL.dim);
+  }
+  var st = [DER.e1, DER.e2]; var cols = [DER_C1, DER_C2]; var marks = [[], []]; var z; var zi; var ii; var tt; var yc;
+  for (q = 0; q < 2; q++) {
+    var sdq = sides[q]; if (sdq.i1 <= sdq.i0) continue;
+    if (st[0] > 0) { z = derZeros(sdq.f2, sdq.i0, sdq.i1, A, th); for (i = 0; i < z.length; i++) marks[0].push({ q: q, x: cx(z[i]), y: zy, price: lo + (z[i] + 0.5) / N * (hi - lo) }); }
+    if (st[1] > 0) { z = derZeros(sdq.f3, sdq.i0, sdq.i1, A3, th); for (i = 0; i < z.length; i++) { zi = z[i]; ii = Math.max(0, Math.min(N - 2, Math.floor(zi))); tt = zi - ii; yc = zy - (sdq.f2[ii] * (1 - tt) + sdq.f2[ii + 1] * tt) / A * hh; marks[1].push({ q: q, x: cx(zi), y: yc, price: lo + (zi + 0.5) / N * (hi - lo) }); } }
+  }
+  var k; var mk; var lastX; var pl;
+  for (k = 0; k < 2; k++) {
+    marks[k].sort(function (a, b) { return a.x - b.x; }); lastX = -1e9; pl = -1e9; var pcol = cols[k];
+    for (i = 0; i < marks[k].length; i++) {
+      mk = marks[k][i]; if (Math.abs(mk.x - lastX) < 3) continue; lastX = mk.x;
+      var x0 = Math.round(mk.x) + 0.5; var y0l = k === 0 ? zy : top + H; var endY = axisY; var cyv = null;
+      if (st[k] >= 3) { var cy = o.Y(derCurveAt(mk.q === 0 ? bp : ap, mk.price, mk.q === 0)); if (cy < o.Tp) endY = o.Tp; else { endY = cy; cyv = cy; } }
+      c.save(); c.strokeStyle = pcol; c.lineWidth = 1; c.setLineDash(k === 0 ? [5, 3] : [2, 3]);
+      c.beginPath(); c.moveTo(x0, y0l); c.lineTo(x0, endY);
+      if (cyv !== null) { c.moveTo(x0, cyv); c.lineTo(L + pw, cyv); }
+      c.stroke(); c.restore();
+      c.fillStyle = pcol; c.beginPath(); c.arc(mk.x, mk.y, 2.5, 0, 6.2832); c.fill();
+      if (cyv !== null) { c.beginPath(); c.arc(mk.x, cyv, 2.5, 0, 6.2832); c.fill(); }
+      if (st[k] < 2 || mk.x - pl < 17) continue;
+      pl = mk.x; var s2 = o.fmt(mk.price); var tl = Math.min(Math.ceil(tw(c, s2)) + 12, H - 4); var rxp = Math.max(L, Math.min(L + pw - 16, mk.x - 8));
+      var ryp = k === 0 ? top + 1 : top + H - tl - 1;
+      c.fillStyle = '#000'; c.fillRect(rxp, ryp, 16, tl); c.save(); c.translate(rxp + 8, ryp + tl - 6); c.rotate(-Math.PI / 2); txt(c, s2, 0, 0.5, 'left', pcol); c.restore();
+    }
   }
 }
 var derPopEl = null; var derPopOff = null; var derPopBtn = null;
@@ -1277,21 +1319,18 @@ function derPop(btn, labels, cur, pick) {                                       
   document.addEventListener('mousedown', out, true); document.addEventListener('touchstart', out, true);
   derPopOff = function () { document.removeEventListener('mousedown', out, true); document.removeEventListener('touchstart', out, true); };
 }
-function psepAt(x, y) {                                                          // граница панелей: жёсткая зона — захват сразу (справа от оси шире, под графиком уже)
-  if (!DV.dh) return -1; var b0 = DV.Tp + DV.ph + DV.bt; var b1 = b0 + DV.h1; var tol = x <= DV.w - DV.R ? 8 : 20;
-  if (Math.abs(y - b0) <= tol) return 0; if (Math.abs(y - b1) <= tol) return 1; return -1;
+function psepAt(x, y) {                                                          // верхняя граница панели f'': жёсткая зона
+  if (!DV.dh) return -1; var b0 = DV.Tp + DV.ph + DV.bt; var tol = x <= DV.w - DV.R ? 8 : 20;
+  return Math.abs(y - b0) <= tol ? 0 : -1;
 }
-function psepNear(x, y) {                                                        // широкая зона под графиком: захват решает направление жеста — по вертикали тянем границу, по горизонтали работает масштаб/сдвиг
-  if (!DV.dh || x > DV.w - DV.R) return -1; var b0 = DV.Tp + DV.ph + DV.bt; var b1 = b0 + DV.h1;
-  if (Math.abs(y - b0) <= 22) return 0; if (Math.abs(y - b1) <= 22) return 1; return -1;
+function psepNear(x, y) {                                                        // широкая зона под графиком: решает направление жеста
+  if (!DV.dh || x > DV.w - DV.R) return -1; var b0 = DV.Tp + DV.ph + DV.bt;
+  return Math.abs(y - b0) <= 22 ? 0 : -1;
 }
-function sepVert(dx, dy) { return Math.abs(dy) > Math.abs(dx) * 1.2; }          // вертикаль в приоритете над горизонталью
-function derSepStart(i) { return { i: i, h1: DV.h1, h2: DV.dh - DV.h1, phT: DV.phT }; }
+function sepVert(dx, dy) { return Math.abs(dy) > Math.abs(dx) * 1.2; }
+function derSepStart(i) { return { i: i, h1: DV.h1, phT: DV.phT }; }
 function derSepDrag(s, dy) {
-  var tot = s.h1 + s.h2; var h1; var h2;
-  if (s.i === 0) { h1 = Math.max(DER_MIN, Math.min(s.phT - 80 - s.h2, s.h1 - dy)); h2 = s.h2; }
-  else { h1 = Math.max(DER_MIN, Math.min(tot - DER_MIN, s.h1 + dy)); h2 = tot - h1; }
-  DER.f1 = h1 / s.phT; DER.f2 = h2 / s.phT; draw();
+  var h1 = Math.max(DER_MIN, Math.min(s.phT - 80, s.h1 - dy)); DER.f1 = h1 / s.phT; draw();
 }
 var dvInertia = { on: false, v: 0, last: 0 };
 function dvStopInertia() { dvInertia.on = false; }
@@ -1601,7 +1640,7 @@ function attachDepth(p) {
     if (e.touches.length >= 2) {
       clearTimeout(lpTimer); lpActive = false; mode = null; var a = e.touches[0]; var b = e.touches[1];
       var ddx = Math.abs(a.clientX - b.clientX); var ddy = Math.abs(a.clientY - b.clientY);
-      pinch = { dx: ddx, dy: ddy, d: Math.sqrt(ddx * ddx + ddy * ddy), vertical: ddy > ddx * 1.2 && ddy > 40 }; e.preventDefault(); return;
+      var pmy = pt(0, (a.clientY + b.clientY) / 2).y; pinch = { dx: ddx, dy: ddy, d: Math.sqrt(ddx * ddx + ddy * ddy), vertical: ddy > ddx * 1.2 && ddy > 40, der: ddy > ddx * 1.2 && ddy > 40 && DV.dh > 0 && pmy > DV.Tp + DV.ph + DV.bt, h1: DV.h1, phT: DV.phT, dy0: ddy }; e.preventDefault(); return;
     }
     if (e.touches.length !== 1) return;
     pinch = null; var z = touchBegin(e.touches[0]);
@@ -1610,7 +1649,8 @@ function attachDepth(p) {
   cv.addEventListener('touchmove', function (e) {
     if (e.touches.length >= 2 && pinch) {
       var a = e.touches[0]; var b = e.touches[1]; var ddx = Math.abs(a.clientX - b.clientX); var ddy = Math.abs(a.clientY - b.clientY);
-      if (pinch.vertical) { if (pinch.dy > 10 && ddy > 5) { dvZoomY(pinch.dy / ddy); pinch.dy = ddy; } }
+      if (pinch.der) { if (pinch.dy0 > 10) { var nh = Math.max(DER_MIN, Math.min(pinch.phT - 80, pinch.h1 * Math.max(ddy, 5) / pinch.dy0)); DER.f1 = nh / pinch.phT; derSave(); draw(); } }
+      else if (pinch.vertical) { if (pinch.dy > 10 && ddy > 5) { dvZoomY(pinch.dy / ddy); pinch.dy = ddy; } }
       else {
         var d = Math.sqrt(ddx * ddx + ddy * ddy); var r = pinch.dx > 30 && ddx > 5 ? pinch.dx / ddx : (pinch.d > 10 && d > 5 ? pinch.d / d : 1);
         var q = pt((a.clientX + b.clientX) / 2, 0); dvZoom(frac(q.x), r); pinch.dx = ddx; pinch.d = d;
@@ -1701,19 +1741,21 @@ function drawDepth(p) {
   for (kk = k0; kk * pStep <= hi + pStep * 1e-9 && pt.length < 60; kk++) pt.push(parseFloat((kk * pStep).toFixed(12)));
   var maxW = 0; var pl = [];
   for (i = 0; i < pt.length; i++) { pl.push(fmtP(pt[i], pStep)); maxW = Math.max(maxW, tw(c, pl[i])); }
-  var Bt = Math.min(Math.ceil(maxW) + 12, Math.floor(h / 3)); var phT = h - Tp - Bt; var h1 = 0; var h2 = 0;
+  var Bt = Math.min(Math.ceil(maxW) + 12, Math.floor(h / 3)); var phT = h - Tp - Bt; var h1 = 0;
   if (DER.on) {                                                                   // две панели производных под основным полем; основному остаётся не меньше 80 px
-    h1 = Math.max(DER_MIN, Math.round(DER.f1 * phT)); h2 = Math.max(DER_MIN, Math.round(DER.f2 * phT)); var dcap = Math.max(2 * DER_MIN, phT - 80);
-    if (h1 + h2 > dcap) { var dfq = dcap / (h1 + h2); h1 = Math.max(DER_MIN, Math.floor(h1 * dfq)); h2 = Math.max(DER_MIN, Math.floor(h2 * dfq)); }
-    if (phT - h1 - h2 < 50) { var drem = Math.max(0, phT - 50); h1 = Math.floor(drem / 2); h2 = drem - h1; }
+    h1 = Math.max(DER_MIN, Math.round(DER.f1 * phT)); var dcap = Math.max(DER_MIN, phT - 80);
+    if (h1 > dcap) h1 = dcap;
+    if (phT - h1 < 50) h1 = Math.max(0, phT - 50);
   }
-  var dh = h1 + h2; var ph = phT - dh; DV.ph = ph; DV.dh = dh; DV.h1 = h1; DV.phT = phT; DV.bt = Bt;
+  var dh = h1; var ph = phT - dh; DV.ph = ph; DV.dh = dh; DV.h1 = h1; DV.phT = phT; DV.bt = Bt;
   DV.yAuto = maxC; var yt = 1e-9; if (bp.length) yt = Math.max(yt, bp[bp.length - 1][1]); if (ap.length) yt = Math.max(yt, ap[ap.length - 1][1]); DV.yTotal = yt;
   var y0 = 0; if (DV.ymax > 0) { maxC = DV.ymax; y0 = Math.max(0, Math.min(DV.y0, maxC * 0.999)); }      // ручное окно шкалы объёма [y0; ymax], y0 ≥ 0; авто — от нуля по видимой части
   p.cv.style.touchAction = DV.ymax > 0 ? 'none' : 'pan-y';                          // при ручном масштабе по объёму палец двигает график, иначе вертикаль листает страницу
   if (p.fit) { p.fit.style.display = 'block'; p.fit.style.height = Math.min(DER_BH, Math.max(20, Bt - 6)) + 'px'; p.fit.style.bottom = 'auto'; p.fit.style.top = (Tp + ph + 5) + 'px'; p.fit.className = 'fab fit' + (DER.on ? ' on' : ''); }   // кнопка Deriv в углу, где сходятся шкалы
-  if (p.dsm) { var dsh = dh > 0 && h2 >= DER_MIN; p.dsm.style.display = dsh ? 'block' : 'none'; if (dsh) { p.dsm.style.bottom = '3px'; p.dsm.textContent = DER_SM[DER.sm] + ' \u25be'; }
-    if (p.dex) { p.dex.style.display = dsh ? 'block' : 'none'; if (dsh) { p.dex.style.bottom = (h - (Tp + ph + Bt + h1) + 3) + 'px'; p.dex.textContent = DER_EX[DER.ex] + ' \u25be'; } } }
+  var dsh = dh > 0 && h1 >= DER_MIN; var dg = derGeom(Tp + ph + Bt, h1);
+  if (p.dsm) { p.dsm.style.display = dsh ? 'block' : 'none'; if (dsh) { p.dsm.style.bottom = '3px'; p.dsm.textContent = DER_SM[DER.sm] + ' \u25be'; } }
+  var ebt = [p.de1, p.de2]; var etp = [dg.zy - 35, dg.zy + 9]; var est = [DER.e1, DER.e2]; var ecl = [DER_C1, DER_C2];
+  for (i = 0; i < 2; i++) if (ebt[i]) { ebt[i].style.display = dsh ? 'block' : 'none'; if (dsh) { ebt[i].style.top = etp[i] + 'px'; var ek = est[i] + ':' + ecl[i]; if (ebt[i].getAttribute('data-k') !== ek) { ebt[i].setAttribute('data-k', ek); ebt[i].innerHTML = derIcon(est[i], ecl[i]); } } }
   function X(pr) { return L + (pr - lo) / (hi - lo) * pw; } function Y(q) { return Tp + ph - (q - y0) / (maxC - y0) * ph; }
   var vStep = niceStepDown((maxC - y0) / 6); var vTarget = Math.max(6, Math.min(8, Math.floor(ph / 70)));      // горизонтальные линии объёма — круглые числа: при любом масштабе не меньше 6 интервалов (подписей ≥ 6), на высоком поле — ближе к vTarget
   for (var vg = 0; vg < 3; vg++) { var vm = vStep / Math.pow(10, Math.floor(Math.log(vStep) / Math.LN10 + 1e-12)); var vNext = vStep * (vm < 1.5 ? 2 : vm < 3 ? 2.5 : 2); if ((maxC - y0) / vNext >= 6 - 1e-9 && (maxC - y0) / vStep > vTarget) vStep = vNext; else break; }
@@ -1737,7 +1779,7 @@ function drawDepth(p) {
   c.save(); c.textBaseline = 'middle';
   for (i = 0; i < pt.length; i++) { c.save(); c.translate(Math.round(X(pt[i])), Tp + ph + 5); c.rotate(-Math.PI / 2); txt(c, pl[i], 0, 0, 'right', COL.dim); c.restore(); }
   c.restore();
-  if (dh > 0 && bp.length > 1 && ap.length > 1) derPanes(c, { L: L, pw: pw, w: w, R: R, Tp: Tp, ph: ph, h1: h1, h2: h2, lo: lo, hi: hi, mid: mid, bp: bp, ap: ap, h: h, Bt: Bt, fmt: fmtPl });
+  if (dh > 0 && bp.length > 1 && ap.length > 1) derPanes(c, { L: L, pw: pw, w: w, R: R, Tp: Tp, ph: ph, h1: h1, Y: Y, lo: lo, hi: hi, mid: mid, bp: bp, ap: ap, h: h, Bt: Bt, fmt: fmtPl });
   DV.pc = { mid: mid, bp: bp, ap: ap, eps: Feed.tick * 1e-6, lo: fullLo, hi: fullHi, maxDev: 100 * Math.min(mid - fullLo, fullHi - mid) / mid, minDev: 0 };
   DV.pc.minDev = Math.min(DV.pc.maxDev, Math.max(0.01, 100 * fineSt / mid));   // минимальное отклонение: не меньше минимального ведёрка и не меньше 0.01%
   DV.pc.mdB = 100 * (mid - fullLo) / mid; DV.pc.mdA = 100 * (fullHi - mid) / mid;   // предел отклонения по данным: отдельно bid и ask
@@ -1902,7 +1944,8 @@ function makePane(k) {
     attachDepth(pane);
     var fb = document.createElement('button'); fb.type = 'button'; fb.className = 'fab fit'; fb.textContent = 'Deriv'; fb.title = 'Volume derivatives by price'; fb.setAttribute('aria-label', 'Deriv'); fb.onclick = function () { DER.on = !DER.on; derSave(); derPopClose(); draw(); }; box.appendChild(fb); pane.fit = fb;
     var sm = document.createElement('button'); sm.type = 'button'; sm.className = 'fab dsm'; sm.title = 'Smooth'; sm.setAttribute('aria-label', 'Smooth'); sm.onclick = function () { derPop(sm, DER_SM, DER.sm, function (i) { DER.sm = i; }); }; box.appendChild(sm); pane.dsm = sm;
-    var ex = document.createElement('button'); ex.type = 'button'; ex.className = 'fab dsm'; ex.title = 'Extrem'; ex.setAttribute('aria-label', 'Extrem'); ex.onclick = function () { derPop(ex, DER_EX, DER.ex, function (i) { DER.ex = i; }); }; box.appendChild(ex); pane.dex = ex;
+    function exBtn(n, title) { var e = document.createElement('button'); e.type = 'button'; e.className = 'fab dex'; e.title = title; e.setAttribute('aria-label', title); e.onclick = function () { if (n === 1) DER.e1 = (DER.e1 + 1) % 4; else DER.e2 = (DER.e2 + 1) % 4; derSave(); draw(); }; box.appendChild(e); return e; }
+    pane.de1 = exBtn(1, 'extr1: zeros of f\'\''); pane.de2 = exBtn(2, 'extr2: extrema of f\'\'');
   }
   return pane;
 }
